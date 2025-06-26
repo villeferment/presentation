@@ -23,7 +23,7 @@
       position: absolute;
       width: 300px;
       height: 200px;
-      border-radius: 50%;
+      border-radius: 50% / 35%;
       background-color: rgba(0, 0, 255, 0.6);
       color: #fff;
       display: flex;
@@ -55,9 +55,9 @@
 
     .mini-bubble {
       position: absolute;
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
+      width: 100px;
+      height: 70px;
+      border-radius: 50% / 35%;
       background-color: rgba(255, 255, 255, 1);
       color: #000;
       font-size: 0.6rem;
@@ -122,10 +122,10 @@
     };
 
     const positions = [
-      { top: "30%", left: "30%" },
-      { top: "30%", left: "50%" },
-      { top: "50%", left: "30%" },
-      { top: "50%", left: "50%" }
+      { top: "30%", left: "25%" },
+      { top: "30%", left: "55%" },
+      { top: "50%", left: "25%" },
+      { top: "50%", left: "55%" }
     ];
 
     const bubbles = [...document.querySelectorAll('.bubble')];
@@ -145,18 +145,24 @@
       activeBubble.innerHTML = `<div>${theme}</div><ul>${details}</ul>`;
 
       const others = bubbles.filter(b => b !== activeBubble);
-      others.forEach((b, i) => b.style.display = 'none');
+      others.forEach(b => b.style.display = 'none');
 
       const miniGroup = document.createElement('div');
       miniGroup.id = 'miniGroup';
       container.appendChild(miniGroup);
 
+      const miniPositions = [
+        { top: '65%', left: '20%' },
+        { top: '75%', left: '25%' },
+        { top: '70%', left: '35%' }
+      ];
+
       others.forEach((b, i) => {
         const mini = document.createElement('div');
         mini.className = 'mini-bubble';
         mini.innerText = b.dataset.theme;
-        mini.style.top = `calc(85% - ${i * 50}px)`;
-        mini.style.left = `calc(85% - ${i * 60}px)`;
+        mini.style.top = miniPositions[i].top;
+        mini.style.left = miniPositions[i].left;
         mini.onclick = () => {
           resetBubbles();
           setTimeout(() => handleClick(b), 500);
