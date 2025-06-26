@@ -1,104 +1,104 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interactive Bubble Presentation</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Overlapping Bubbles Presentation</title>
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      padding: 0;
       background: #f3f3f3;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
+      font-family: Arial, sans-serif;
       overflow: hidden;
     }
 
-    .container {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      justify-content: center;
-      max-width: 1200px;
+    .bubble-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
     }
 
     .bubble {
-      width: 200px;
-      height: 200px;
+      position: absolute;
+      width: 250px;
+      height: 250px;
       border-radius: 50%;
-      background-color: #4c91f0;
-      color: white;
+      background-color: rgba(0, 0, 255, 0.6);
+      color: #000;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1rem;
       text-align: center;
-      transition: all 0.4s ease;
-      cursor: pointer;
       padding: 10px;
+      cursor: pointer;
+      transition: all 0.5s ease;
+      font-weight: bold;
     }
 
+    /* Positioning bubbles in overlapping formation */
+    .bubble:nth-child(2) { top: 35%; left: 40%; }
+    .bubble:nth-child(3) { top: 25%; left: 50%; }
+    .bubble:nth-child(4) { top: 45%; left: 50%; }
+    .bubble:nth-child(5) { top: 35%; left: 60%; }
+
     .bubble.inactive {
-      opacity: 0.3;
-      transform: scale(0.8);
+      opacity: 0.2;
+      transform: scale(0.6);
     }
 
     .bubble.active {
-      transform: scale(1.4);
-      background-color: #2b65c3;
-      z-index: 10;
+      z-index: 5;
+      width: 90vw;
+      height: 90vh;
+      border-radius: 30px;
+      left: 5vw !important;
+      top: 5vh !important;
+      background-color: rgba(0, 0, 255, 0.85);
+      color: #fff;
+      font-size: 2rem;
+      flex-direction: column;
+    }
+
+    .bubble ul {
+      margin-top: 20px;
+      font-size: 1rem;
+      list-style: none;
+      padding: 0;
     }
 
     .back-btn {
       display: none;
-      margin: 20px;
+      position: absolute;
+      top: 20px;
+      left: 20px;
       padding: 10px 20px;
-      font-size: 1rem;
       background: #222;
       color: #fff;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
+      z-index: 10;
     }
 
-    .details {
-      display: none;
-      text-align: center;
-      max-width: 600px;
-      margin-top: 20px;
-    }
-
-    .details ul {
-      list-style: none;
-      padding: 0;
-    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="bubble" data-theme="Separate focus in relation to the entity">Separate focus in relation to the entity</div>
+  <div class="bubble-container">
+    <button class="back-btn" onclick="resetBubbles()">Tillbaka</button>
     <div class="bubble" data-theme="Intertwined as an entity">Intertwined as an entity</div>
+    <div class="bubble" data-theme="Separate focus in relation to the entity">Separate focus in relation to the entity</div>
     <div class="bubble" data-theme="Simultaneous experience of subject-object">Simultaneous experience of subject-object</div>
     <div class="bubble" data-theme="Bodily experience of movement">Bodily experience of movement</div>
   </div>
-  <button class="back-btn" onclick="resetView()">Tillbaka</button>
-  <div class="details" id="details"></div>
 
   <script>
-    const bubbles = document.querySelectorAll('.bubble');
-    const backBtn = document.querySelector('.back-btn');
-    const details = document.getElementById('details');
-
     const themes = {
-      "Separate focus in relation to the entity": [
-        "eye contact", "timing", "speed", "direction in space", "gracefulness"
-      ],
       "Intertwined as an entity": [
-        "eye contact", "timing", "speed", "direction in space", "gracefulness"
+        "Eye contact", "Timing", "Speed", "Direction in space", "Gracefulness"
+      ],
+      "Separate focus in relation to the entity": [
+        "Eye contact", "Timing", "Speed", "Direction in space", "Gracefulness"
       ],
       "Simultaneous experience of subject-object": [
         "Listening with and through the body",
@@ -112,30 +112,27 @@
       ]
     };
 
+    const bubbles = document.querySelectorAll('.bubble');
+    const backBtn = document.querySelector('.back-btn');
+
     bubbles.forEach(bubble => {
       bubble.addEventListener('click', () => {
-        bubbles.forEach(b => b.classList.add('inactive'));
-        bubble.classList.remove('inactive');
+        const theme = bubble.dataset.theme;
+        const details = themes[theme].map(item => `<li>${item}</li>`).join("");
+        bubble.innerHTML = `<div>${theme}</div><ul>${details}</ul>`;
         bubble.classList.add('active');
-        showDetails(bubble.dataset.theme);
+        bubbles.forEach(b => {
+          if (b !== bubble) b.classList.add('inactive');
+        });
+        backBtn.style.display = 'block';
       });
     });
 
-    function showDetails(theme) {
-      const items = themes[theme]
-        .map(item => `<li>${item}</li>`) 
-        .join('');
-
-      details.innerHTML = `<h2>${theme}</h2><ul>${items}</ul>`;
-      details.style.display = 'block';
-      backBtn.style.display = 'inline-block';
-    }
-
-    function resetView() {
-      bubbles.forEach(b => {
-        b.classList.remove('inactive', 'active');
+    function resetBubbles() {
+      bubbles.forEach(bubble => {
+        bubble.classList.remove('active', 'inactive');
+        bubble.innerHTML = bubble.dataset.theme;
       });
-      details.style.display = 'none';
       backBtn.style.display = 'none';
     }
   </script>
