@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Overlapping Bubbles Presentation</title>
+  <title>Interactive Bubbles Presentation</title>
   <style>
     body {
       margin: 0;
@@ -17,12 +17,22 @@
       position: relative;
       width: 100vw;
       height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .row {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
     }
 
     .bubble {
-      position: absolute;
-      width: 250px;
-      height: 250px;
+      position: relative;
+      width: 200px;
+      height: 200px;
       border-radius: 50%;
       background-color: rgba(0, 0, 255, 0.6);
       color: #000;
@@ -32,32 +42,29 @@
       text-align: center;
       padding: 10px;
       cursor: pointer;
-      transition: all 0.5s ease;
+      transition: all 0.6s ease;
       font-weight: bold;
     }
 
-    /* Positioning bubbles in overlapping formation */
-    .bubble:nth-child(2) { top: 35%; left: 40%; }
-    .bubble:nth-child(3) { top: 25%; left: 50%; }
-    .bubble:nth-child(4) { top: 45%; left: 50%; }
-    .bubble:nth-child(5) { top: 35%; left: 60%; }
-
-    .bubble.inactive {
-      opacity: 0.2;
-      transform: scale(0.6);
+    .bubble.shrinked {
+      width: 100px;
+      height: 100px;
+      font-size: 0.7rem;
+      position: absolute;
     }
 
     .bubble.active {
-      z-index: 5;
+      position: absolute;
+      top: 5vh;
+      left: 5vw;
       width: 90vw;
       height: 90vh;
       border-radius: 30px;
-      left: 5vw !important;
-      top: 5vh !important;
       background-color: rgba(0, 0, 255, 0.85);
       color: #fff;
       font-size: 2rem;
       flex-direction: column;
+      z-index: 10;
     }
 
     .bubble ul {
@@ -78,18 +85,21 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      z-index: 10;
+      z-index: 15;
     }
-
   </style>
 </head>
 <body>
   <div class="bubble-container">
     <button class="back-btn" onclick="resetBubbles()">Tillbaka</button>
-    <div class="bubble" data-theme="Intertwined as an entity">Intertwined as an entity</div>
-    <div class="bubble" data-theme="Separate focus in relation to the entity">Separate focus in relation to the entity</div>
-    <div class="bubble" data-theme="Simultaneous experience of subject-object">Simultaneous experience of subject-object</div>
-    <div class="bubble" data-theme="Bodily experience of movement">Bodily experience of movement</div>
+    <div class="row">
+      <div class="bubble" data-theme="Intertwined as an entity">Intertwined as an entity</div>
+      <div class="bubble" data-theme="Separate focus in relation to the entity">Separate focus in relation to the entity</div>
+    </div>
+    <div class="row">
+      <div class="bubble" data-theme="Simultaneous experience of subject-object">Simultaneous experience of subject-object</div>
+      <div class="bubble" data-theme="Bodily experience of movement">Bodily experience of movement</div>
+    </div>
   </div>
 
   <script>
@@ -115,23 +125,52 @@
     const bubbles = document.querySelectorAll('.bubble');
     const backBtn = document.querySelector('.back-btn');
 
-    bubbles.forEach(bubble => {
-      bubble.addEventListener('click', () => {
-        const theme = bubble.dataset.theme;
-        const details = themes[theme].map(item => `<li>${item}</li>`).join("");
-        bubble.innerHTML = `<div>${theme}</div><ul>${details}</ul>`;
-        bubble.classList.add('active');
-        bubbles.forEach(b => {
-          if (b !== bubble) b.classList.add('inactive');
-        });
-        backBtn.style.display = 'block';
+    function handleClick(clickedBubble) {
+      bubbles.forEach(b => {
+        b.classList.remove('active', 'shrinked');
+        b.innerHTML = b.dataset.theme;
       });
+
+      clickedBubble.classList.add('active');
+      const theme = clickedBubble.dataset.theme;
+      const details = themes[theme].map(item => `<li>${item}</li>`).join("");
+      clickedBubble.innerHTML = `<div>${theme}</div><ul>${details}</ul>`;
+
+      bubbles.forEach(b => {
+        if (b !== clickedBubble) {
+          b.classList.add('shrinked');
+          const bounds = clickedBubble.getBoundingClientRect();
+          const corner = getOppositeCorner(bounds);
+          b.style.top = corner.top + 'px';
+          b.style.left = corner.left + 'px';
+        }
+      });
+
+      backBtn.style.display = 'block';
+    }
+
+    function getOppositeCorner(bounds) {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const isLeft = bounds.left < vw / 2;
+      const isTop = bounds.top < vh / 2;
+
+      return {
+        top: isTop ? vh - 120 : 20,
+        left: isLeft ? vw - 120 : 20
+      };
+    }
+
+    bubbles.forEach(bubble => {
+      bubble.addEventListener('click', () => handleClick(bubble));
     });
 
     function resetBubbles() {
-      bubbles.forEach(bubble => {
-        bubble.classList.remove('active', 'inactive');
-        bubble.innerHTML = bubble.dataset.theme;
+      bubbles.forEach(b => {
+        b.classList.remove('active', 'shrinked');
+        b.style.top = '';
+        b.style.left = '';
+        b.innerHTML = b.dataset.theme;
       });
       backBtn.style.display = 'none';
     }
