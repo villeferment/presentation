@@ -36,21 +36,27 @@
       font-weight: bold;
     }
 
-    .bubble.shrinked {
-      width: 100px;
-      height: 60px;
-      font-size: 0.6rem;
-      z-index: 1;
+    .active {
+      z-index: 5;
+      width: 70vw;
+      height: 70vh;
+      font-size: 1.5rem;
+      background-color: rgba(0, 0, 255, 0.85);
+      color: white;
+      flex-direction: column;
+      left: 15vw !important;
+      top: 15vh !important;
     }
 
-    .bubble.active {
-      z-index: 10;
-      background-color: rgba(0, 0, 255, 0.85);
-      color: #fff;
-      font-size: 1.5rem;
-      flex-direction: column;
-      width: 500px;
-      height: 300px;
+    .mini-bubbles {
+      position: absolute;
+      width: 300px;
+      height: 180px;
+      border-radius: 50% / 40%;
+      font-size: 0.6rem;
+      background-color: rgba(0, 0, 255, 0.5);
+      z-index: 1;
+      transition: all 0.5s ease;
     }
 
     .bubble ul {
@@ -71,17 +77,17 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      z-index: 15;
+      z-index: 10;
     }
   </style>
 </head>
 <body>
   <div class="bubble-container">
     <button class="back-btn" onclick="resetBubbles()">Tillbaka</button>
-    <div class="bubble" style="top: 10%; left: 15%;" data-theme="Intertwined as an entity">Intertwined as an entity</div>
-    <div class="bubble" style="top: 10%; right: 15%;" data-theme="Separate focus in relation to the entity">Separate focus in relation to the entity</div>
-    <div class="bubble" style="bottom: 10%; left: 15%;" data-theme="Simultaneous experience of subject-object">Simultaneous experience of subject-object</div>
-    <div class="bubble" style="bottom: 10%; right: 15%;" data-theme="Bodily experience of movement">Bodily experience of movement</div>
+    <div class="bubble" id="bubble1" data-theme="Intertwined as an entity">Intertwined as an entity</div>
+    <div class="bubble" id="bubble2" data-theme="Separate focus in relation to the entity">Separate focus in relation to the entity</div>
+    <div class="bubble" id="bubble3" data-theme="Simultaneous experience of subject-object">Simultaneous experience of subject-object</div>
+    <div class="bubble" id="bubble4" data-theme="Bodily experience of movement">Bodily experience of movement</div>
   </div>
 
   <script>
@@ -104,52 +110,57 @@
       ]
     };
 
-    const bubbles = document.querySelectorAll('.bubble');
+    const positions = [
+      { top: "35%", left: "35%" }, // bubble1
+      { top: "35%", left: "45%" }, // bubble2
+      { top: "45%", left: "35%" }, // bubble3
+      { top: "45%", left: "45%" }  // bubble4
+    ];
+
+    const bubbles = [...document.querySelectorAll('.bubble')];
+    const container = document.querySelector('.bubble-container');
     const backBtn = document.querySelector('.back-btn');
 
-    function handleClick(clickedBubble) {
-      bubbles.forEach(b => {
-        b.classList.remove('active', 'shrinked');
-        b.innerHTML = b.dataset.theme;
-      });
-
-      clickedBubble.classList.add('active');
-      const theme = clickedBubble.dataset.theme;
-      const details = themes[theme].map(item => `<li>${item}</li>`).join("");
-      clickedBubble.innerHTML = `<div>${theme}</div><ul>${details}</ul>`;
-
-      const rect = clickedBubble.getBoundingClientRect();
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      const isLeft = rect.left < vw / 2;
-      const isTop = rect.top < vh / 2;
-
-      bubbles.forEach(b => {
-        if (b !== clickedBubble) {
-          b.classList.add('shrinked');
-          const newTop = isTop ? '80%' : '10%';
-          const newLeft = isLeft ? '80%' : '10%';
-          b.style.top = newTop;
-          b.style.left = newLeft;
-        }
-      });
-
-      backBtn.style.display = 'block';
-    }
-
-    bubbles.forEach(bubble => {
-      bubble.addEventListener('click', () => handleClick(bubble));
+    // Init placement
+    bubbles.forEach((b, i) => {
+      b.style.top = positions[i].top;
+      b.style.left = positions[i].left;
     });
 
-    function resetBubbles() {
-      bubbles.forEach(b => {
-        b.classList.remove('active', 'shrinked');
-        b.innerHTML = b.dataset.theme;
-        b.style.top = '';
-        b.style.left = '';
+    function handleClick(activeBubble) {
+      bubbles.forEach(b => b.style.pointerEvents = "none");
+
+      const theme = activeBubble.dataset.theme;
+      const details = themes[theme].map(i => `<li>${i}</li>`).join("");
+
+      activeBubble.classList.add("active");
+      activeBubble.innerHTML = `<div>${theme}</div><ul>${details}</ul>`;
+
+      const otherBubbles = bubbles.filter(b => b !== activeBubble);
+      otherBubbles.forEach((b, i) => {
+        b.classList.add("mini-bubbles");
+        // offset into bottom-right by default
+        b.style.top = `calc(15vh + ${i * 40}px)`;
+        b.style.left = `calc(15vw + ${i * 50}px)`;
       });
-      backBtn.style.display = 'none';
+
+      backBtn.style.display = "block";
     }
+
+    function resetBubbles() {
+      bubbles.forEach((b, i) => {
+        b.classList.remove("active", "mini-bubbles");
+        b.innerHTML = b.dataset.theme;
+        b.style.top = positions[i].top;
+        b.style.left = positions[i].left;
+        b.style.pointerEvents = "auto";
+      });
+      backBtn.style.display = "none";
+    }
+
+    bubbles.forEach(b => {
+      b.addEventListener("click", () => handleClick(b));
+    });
   </script>
 </body>
 </html>
