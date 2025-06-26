@@ -9,7 +9,7 @@
       margin: 0;
       padding: 0;
       background: #f3f3f3;
-      font-family: Arial, sans-serif;
+      font-family: 'Helvetica Neue', sans-serif;
       overflow: hidden;
     }
 
@@ -22,10 +22,10 @@
     .bubble {
       position: absolute;
       width: 300px;
-      height: 180px;
-      border-radius: 50% / 40%;
+      height: 200px;
+      border-radius: 50%;
       background-color: rgba(0, 0, 255, 0.6);
-      color: #000;
+      color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -34,29 +34,40 @@
       cursor: pointer;
       transition: all 0.6s ease;
       font-weight: bold;
+      font-size: 1rem;
+      z-index: 2;
+    }
+
+    .bubble:hover {
+      filter: brightness(1.2);
     }
 
     .active {
-      z-index: 5;
       width: 70vw;
       height: 70vh;
-      font-size: 1.5rem;
-      background-color: rgba(0, 0, 255, 0.85);
-      color: white;
-      flex-direction: column;
       left: 15vw !important;
       top: 15vh !important;
+      background-color: rgba(0, 0, 255, 0.85);
+      z-index: 5;
+      flex-direction: column;
+      font-size: 1.5rem;
     }
 
-    .mini-bubbles {
+    .mini-bubble {
       position: absolute;
-      width: 300px;
-      height: 180px;
-      border-radius: 50% / 40%;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 1);
+      color: #000;
       font-size: 0.6rem;
-      background-color: rgba(0, 0, 255, 0.5);
-      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
       transition: all 0.5s ease;
+      z-index: 3;
     }
 
     .bubble ul {
@@ -96,11 +107,11 @@
         "Eye contact", "Timing", "Speed", "Direction in space", "Gracefulness"
       ],
       "Separate focus in relation to the entity": [
-        "Eye contact", "Timing", "Speed", "Direction in space", "Gracefulness"
+        "Multiple perspectives", "Focused distance", "Intentional observation"
       ],
       "Simultaneous experience of subject-object": [
         "Listening with and through the body",
-        "Openness to oneself and the collaborative work",
+        "Openness to oneself and collaborative work",
         "Attention with and through the body"
       ],
       "Bodily experience of movement": [
@@ -111,17 +122,16 @@
     };
 
     const positions = [
-      { top: "35%", left: "35%" }, // bubble1
-      { top: "35%", left: "45%" }, // bubble2
-      { top: "45%", left: "35%" }, // bubble3
-      { top: "45%", left: "45%" }  // bubble4
+      { top: "30%", left: "30%" },
+      { top: "30%", left: "50%" },
+      { top: "50%", left: "30%" },
+      { top: "50%", left: "50%" }
     ];
 
     const bubbles = [...document.querySelectorAll('.bubble')];
     const container = document.querySelector('.bubble-container');
     const backBtn = document.querySelector('.back-btn');
 
-    // Init placement
     bubbles.forEach((b, i) => {
       b.style.top = positions[i].top;
       b.style.left = positions[i].left;
@@ -129,33 +139,45 @@
 
     function handleClick(activeBubble) {
       bubbles.forEach(b => b.style.pointerEvents = "none");
-
       const theme = activeBubble.dataset.theme;
       const details = themes[theme].map(i => `<li>${i}</li>`).join("");
-
       activeBubble.classList.add("active");
       activeBubble.innerHTML = `<div>${theme}</div><ul>${details}</ul>`;
 
-      const otherBubbles = bubbles.filter(b => b !== activeBubble);
-      otherBubbles.forEach((b, i) => {
-        b.classList.add("mini-bubbles");
-        // offset into bottom-right by default
-        b.style.top = `calc(15vh + ${i * 40}px)`;
-        b.style.left = `calc(15vw + ${i * 50}px)`;
+      const others = bubbles.filter(b => b !== activeBubble);
+      others.forEach((b, i) => b.style.display = 'none');
+
+      const miniGroup = document.createElement('div');
+      miniGroup.id = 'miniGroup';
+      container.appendChild(miniGroup);
+
+      others.forEach((b, i) => {
+        const mini = document.createElement('div');
+        mini.className = 'mini-bubble';
+        mini.innerText = b.dataset.theme;
+        mini.style.top = `calc(85% - ${i * 50}px)`;
+        mini.style.left = `calc(85% - ${i * 60}px)`;
+        mini.onclick = () => {
+          resetBubbles();
+          setTimeout(() => handleClick(b), 500);
+        };
+        miniGroup.appendChild(mini);
       });
 
-      backBtn.style.display = "block";
+      backBtn.style.display = 'block';
     }
 
     function resetBubbles() {
+      document.getElementById('miniGroup')?.remove();
       bubbles.forEach((b, i) => {
-        b.classList.remove("active", "mini-bubbles");
+        b.classList.remove('active');
         b.innerHTML = b.dataset.theme;
         b.style.top = positions[i].top;
         b.style.left = positions[i].left;
+        b.style.display = 'flex';
         b.style.pointerEvents = "auto";
       });
-      backBtn.style.display = "none";
+      backBtn.style.display = 'none';
     }
 
     bubbles.forEach(b => {
