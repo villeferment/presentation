@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="sv">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Bubbla Pyramid</title>
+  <title>Interaktiv Bubbla Pyramid</title>
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f7f7f7;
+      font-family: sans-serif;
+      background-color: #f2f2f2;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -19,197 +19,155 @@
       position: relative;
       width: 1000px;
       height: 800px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
     }
 
     .bubble {
       position: absolute;
-      background: white;
+      background-color: white;
       border-radius: 50% / 40%;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-      cursor: pointer;
-      box-sizing: border-box;
-      padding: 20px;
-      text-align: center;
-      transition: all 0.5s ease;
-      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.6s ease;
+      padding: 20px;
+      box-sizing: border-box;
       user-select: none;
-      z-index: 1;
     }
 
     .bubble h3 {
       margin: 0;
-      font-size: 16px;
-      line-height: 1.2;
+      font-size: 14px;
+      line-height: 1.3em;
     }
 
     .bubble p {
-      margin-top: 10px;
-      font-size: 13px;
-      white-space: pre-line; /* Så br-taggar fungerar */
       display: none;
-      line-height: 1.3;
+      font-size: 12px;
+      margin-top: 10px;
+      line-height: 1.4em;
     }
 
-    /* Standard storlek (utgångsläge) */
+    .bubble.active h3 {
+      font-size: 20px;
+    }
+
+    .bubble.active p {
+      display: block;
+    }
+
+    /* Default (utgångsläge) storlek */
     .bubble.default {
-      width: 260px;
-      height: 160px;
+      width: 220px;
+      height: 140px;
       font-size: 14px;
-      z-index: 1;
     }
 
-    /* Expanderad bubbla */
-    .bubble.active {
-      width: 500px;
-      height: 300px;
-      font-size: 18px;
-      padding: 30px;
-      z-index: 10;
-    }
-
-    /* Minimerade bubblor vid expanderad */
+    /* Minimerad storlek */
     .bubble.minimized {
-      width: 140px;
-      height: 90px;
+      width: 120px;
+      height: 80px;
       font-size: 11px;
       padding: 12px 10px;
       z-index: 5;
     }
 
-    #resetBtn {
+    /* Pyramidens startpositioner */
+    .bubble[data-index="0"] {
+      top: 10%;
+      left: 50%;
+      transform: translate(-50%, 0);
+    }
+
+    .bubble[data-index="1"] {
+      bottom: 15%;
+      left: 30%;
+      transform: translate(0, 0);
+    }
+
+    .bubble[data-index="2"] {
+      bottom: 15%;
+      right: 30%;
+      transform: translate(0, 0);
+    }
+
+    /* Tillbaka-knappen */
+    #backBtn {
       position: absolute;
-      top: 15px;
-      right: 15px;
-      background: #333;
+      top: 10px;
+      left: 10px;
+      padding: 8px 14px;
+      background-color: #007bff;
       color: white;
       border: none;
-      padding: 12px 20px;
+      border-radius: 6px;
       font-size: 14px;
       cursor: pointer;
-      border-radius: 6px;
       user-select: none;
+      opacity: 0;
+      transition: opacity 0.4s ease;
       z-index: 20;
-      transition: background-color 0.3s ease;
     }
-    #resetBtn:hover {
-      background: #555;
+
+    #backBtn.visible {
+      opacity: 1;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <button id="resetBtn">Tillbaka</button>
+    <button id="backBtn">Tillbaka</button>
 
-    <div class="bubble default" data-index="0" data-title="Bodily experience of movement"
-      data-description="Embodied experience from within<br>Being in the movement<br>Prior knowledge in relation to the phenomenon">
-      <h3>Bodily experience of movement</h3>
-      <p></p>
+    <div class="bubble default" data-index="0" data-title="Separate and intertwined relation as an entity"
+      data-description="Eye contact, timing, speed, direction in space, gracefulness">
+      <div class="content">
+        <h3>Separate and intertwined relation as an entity</h3>
+        <p>Eye contact, timing, speed, direction in space, gracefulness</p>
+      </div>
     </div>
 
     <div class="bubble default" data-index="1" data-title="Simultaneous experience of subject-object"
-      data-description="Listening with and through the body<br>Openness to oneself and the collaborative work<br>Attention with and through the body">
-      <h3>Simultaneous experience of subject-object</h3>
-      <p></p>
+      data-description="Listening with and through the body, openness to oneself and the collaborative work">
+      <div class="content">
+        <h3>Simultaneous experience of subject-object</h3>
+        <p>Listening with and through the body, openness to oneself and the collaborative work</p>
+      </div>
     </div>
 
-    <div class="bubble default" data-index="2" data-title="Separate and intertwined relation as an entity"
-      data-description="Eye contact<br>Timing<br>Speed<br>Direction in space<br>Gracefulness">
-      <h3>Separate and intertwined relation as an entity</h3>
-      <p></p>
+    <div class="bubble default" data-index="2" data-title="Bodily experience of movement"
+      data-description="Embodied experience from within, being in the movement, prior knowledge in relation to the phenomenon">
+      <div class="content">
+        <h3>Bodily experience of movement</h3>
+        <p>Embodied experience from within, being in the movement, prior knowledge in relation to the phenomenon</p>
+      </div>
     </div>
   </div>
 
   <script>
     const bubbles = document.querySelectorAll('.bubble');
-    const resetBtn = document.getElementById('resetBtn');
+    const backBtn = document.getElementById('backBtn');
 
-    // Mått för bubblor (ellipsform)
+    // Storlekar
     const sizes = {
-      default: { width: 260, height: 160 },
+      default: { width: 220, height: 140 },
       active: { width: 500, height: 300 },
-      minimized: { width: 140, height: 90 }
+      minimized: { width: 120, height: 80 }
     };
 
-    // --- UTGÅNGSLÄGE: Pyramiden med exakt kantkontakt ---
-
-    /*
-      Vi vill placera bubblorna såhär:
-
-                 [0]
-               /      \
-            [1]        [2]
-
-      Alla nuddar varandra precis kant mot kant.
-
-      Bubblorna är ellipser med radier:
-      - halvbredd = width/2
-      - halvhöjd = height/2
-
-      Vi beräknar koordinaterna så att:
-      - bubbla 0 är centrerad horisontellt på toppen
-      - bubbla 1 och 2 ligger symmetriskt nedanför, så att bubblorna nuddar bubbla 0 och varandra kant i kant
-    */
-
-    // Halvstorlekar default
-    const w = sizes.default.width;
-    const h = sizes.default.height;
-    const hw = w / 2;
-    const hh = h / 2;
-
-    // Placera bubbla 0 i toppen, horisontellt centrerad ca 350 px från vänster, topp ca 100 px
-    // Container är 1000px bred, så centrerat ca 370 px left så att bubbla ligger mellan 370 och 370+260
-    const topBubbleX = 370;
-    const topBubbleY = 100;
-
-    // Nu ska vi placera bubblorna 1 och 2 så att de nuddar bubbla 0 och varandra kant i kant.
-
-    // För att räkna ut dessa placeringar använder vi en geometrisk metod.
-
-    // Bubblorna är ellipser med:
-    // x-radie = 130, y-radie = 80
-
-    // Vi antar att bubblorna är placerade så att deras kanter "nuddat" längs en linje.
-
-    // Cirkelapproximation (för enklare beräkning), tar största radien för att få bra placering:
-    const radX = hw;  // 130 px
-    const radY = hh;  // 80 px
-
-    // Vertikalt avstånd mellan bubbla 0 och nedre bubblor = 0 eftersom de ska nudda kant mot kant, men eftersom bubblorna är elliptiska och inte cirklar behövs en liten justering.
-
-    // Vi kan approx placera bubblorna 1 och 2 så att de ligger ca:
-    // - vertikalt på topBubbleY + hh + hh * 0.9 (lite mindre än dubbla höjden för att få kantkontakt)
-    // - horisontellt symmetriskt från bubbla 0 med avstånd för att bubbla 1 och 2 nuddar varandra exakt kant mot kant
-
-    // Radie längs x för bubblorna 1 och 2 = 130 px
-    // För att bubbla 1 och 2 ska nudda varandra: horisontellt avstånd = 2 * 130 = 260 px
-
-    // Samtidigt ska bubbla 1 och 2 nudda bubbla 0, så deras centers är horisontellt flyttade från bubbla 0 med radier med hänsyn till bubbelform.
-
-    // Vi kan lösa detta ungefär såhär:
-
-    // Höjd på bubbla 1 och 2: topBubbleY + hh + hh * 0.85 (justerat)
-
-    // Horisontella positioner för bubbla 1 och 2:
-
-    // - bubbla 1: left = topBubbleX - 130 - 15 (justerat)
-    // - bubbla 2: left = topBubbleX + 130 - 15
-
-    // Den -15 px justeringen är för att bubblornas elliptiska form ger en liten förskjutning för att kanten ska nudda.
-
-    // Sätt positioner:
-
-    const posDefault = [
-      { top: topBubbleY, left: topBubbleX },               // bubbla 0 topp
-      { top: topBubbleY + hh + hh * 0.85, left: topBubbleX - radX - 15 }, // bubbla 1 botten vänster
-      { top: topBubbleY + hh + hh * 0.85, left: topBubbleX + radX - 15 }  // bubbla 2 botten höger
+    // Startpositioner i pyramid (utgångsläge)
+    const startPositions = [
+      { top: '10%', left: '50%', right: '', bottom: '', transform: 'translate(-50%, 0)' },
+      { top: '', left: '30%', right: '', bottom: '15%', transform: 'translate(0, 0)' },
+      { top: '', left: '', right: '30%', bottom: '15%', transform: 'translate(0, 0)' }
     ];
 
-    // Funktion för att sätta utgångspositioner
-    function setDefaultPositions() {
+    // Återställ till utgångsläge
+    function resetBubbles() {
       bubbles.forEach((bubble, i) => {
         bubble.classList.remove('active', 'minimized');
         bubble.classList.add('default');
@@ -218,16 +176,22 @@
         bubble.style.fontSize = '14px';
         bubble.style.padding = '20px';
         bubble.style.zIndex = 1;
-        bubble.style.left = posDefault[i].left + 'px';
-        bubble.style.top = posDefault[i].top + 'px';
         bubble.querySelector('p').style.display = 'none';
+        bubble.querySelector('h3').textContent = bubble.dataset.title;
+
+        // Återställ positioner
+        Object.assign(bubble.style, {
+          top: startPositions[i].top || '',
+          bottom: startPositions[i].bottom || '',
+          left: startPositions[i].left || '',
+          right: startPositions[i].right || '',
+          transform: startPositions[i].transform
+        });
       });
+      backBtn.classList.remove('visible');
     }
 
-    // --- EXPANDERAT LÄGE ---
-
-    // Expanderad bubbla centreras, små bubblor placeras kant mot kant med korrekt vektor
-
+    // Placera bubblor vid aktivering (expandering)
     function setActivePositions(activeIndex) {
       bubbles.forEach((bubble, i) => {
         if (i === activeIndex) {
@@ -240,9 +204,14 @@
           bubble.style.zIndex = 10;
           bubble.querySelector('p').style.display = 'block';
           bubble.querySelector('p').innerHTML = bubble.dataset.description;
-          // Centrera aktiv bubbla horisontellt och vertikalt i container
+
+          // Centrera aktiv bubbla i container
           bubble.style.left = (1000 - sizes.active.width) / 2 + 'px';
           bubble.style.top = (800 - sizes.active.height) / 2 + 'px';
+          bubble.style.right = '';
+          bubble.style.bottom = '';
+          bubble.style.transform = 'none';
+
         } else {
           bubble.classList.add('minimized');
           bubble.classList.remove('default', 'active');
@@ -253,60 +222,92 @@
           bubble.style.zIndex = 5;
           bubble.querySelector('p').style.display = 'none';
 
-          // Beräkna positioner så att små bubblor nuddar den stora kant mot kant, med korrekt riktning
+          const centerX = (1000 - sizes.active.width) / 2 + sizes.active.width / 2;
+          const centerY = (800 - sizes.active.height) / 2 + sizes.active.height / 2;
 
-          // Vektor från aktiv bubbla i defaultläge till denna bubbla i defaultläge
-          const activePos = posDefault[activeIndex];
-          const otherPos = posDefault[i];
-
-          const vecX = otherPos.left - activePos.left;
-          const vecY = otherPos.top - activePos.top;
-
-          const dist = Math.sqrt(vecX * vecX + vecY * vecY);
-          const ux = vecX / dist;
-          const uy = vecY / dist;
-
-          // Halvstorlekar
-          const activeHalfWidth = sizes.active.width / 2;
-          const activeHalfHeight = sizes.active.height / 2;
           const miniHalfWidth = sizes.minimized.width / 2;
           const miniHalfHeight = sizes.minimized.height / 2;
 
-          // Avstånd kant till kant längs vektor (ellipsapprox)
-          const activeRadius = Math.abs(ux) * activeHalfWidth + Math.abs(uy) * activeHalfHeight;
-          const miniRadius = Math.abs(ux) * miniHalfWidth + Math.abs(uy) * miniHalfHeight;
+          if (activeIndex === 0) {
+            // Aktiv bubbla 0 (uppe) - små bubblor nedanför, nuddar nederkant och varandra lite
+            const offsetY = sizes.active.height / 2 + miniHalfHeight - 5; // nuddar nederkant
+            const offsetX = 100; // horisontell separation
 
-          // Aktiv bubbla centrerad i container (center coords)
-          const centerX = (1000 - sizes.active.width) / 2 + activeHalfWidth;
-          const centerY = (800 - sizes.active.height) / 2 + activeHalfHeight;
+            if (i === 1) {
+              bubble.style.left = (centerX - offsetX - miniHalfWidth) + 'px';
+              bubble.style.top = (centerY + offsetY - miniHalfHeight) + 'px';
+              bubble.style.right = '';
+              bubble.style.bottom = '';
+              bubble.style.transform = 'none';
+            }
+            if (i === 2) {
+              bubble.style.left = (centerX + offsetX - miniHalfWidth) + 'px';
+              bubble.style.top = (centerY + offsetY - miniHalfHeight) + 'px';
+              bubble.style.right = '';
+              bubble.style.bottom = '';
+              bubble.style.transform = 'none';
+            }
+          } else if (activeIndex === 1) {
+            // Aktiv bubbla 1 (nedre vänstra) - små bubblor uppe till höger, nuddar vänsterkant och varandra lite
+            const offsetX = sizes.active.width / 2 + miniHalfWidth - 5; // nuddar vänsterkant
+            const offsetY = sizes.active.height / 2 + miniHalfHeight - 5;
 
-          // Placera bubbla kant mot kant från aktiv bubbla längs riktningen
-          const miniCenterX = centerX + ux * (activeRadius + miniRadius);
-          const miniCenterY = centerY + uy * (activeRadius + miniRadius);
+            if (i === 0) {
+              bubble.style.left = (centerX + offsetX - miniHalfWidth) + 'px';
+              bubble.style.top = (centerY - offsetY - miniHalfHeight - 20) + 'px';
+              bubble.style.right = '';
+              bubble.style.bottom = '';
+              bubble.style.transform = 'none';
+            }
+            if (i === 2) {
+              bubble.style.left = (centerX + offsetX + 80 - miniHalfWidth) + 'px';
+              bubble.style.top = (centerY - offsetY - miniHalfHeight) + 'px';
+              bubble.style.right = '';
+              bubble.style.bottom = '';
+              bubble.style.transform = 'none';
+            }
+          } else if (activeIndex === 2) {
+            // Aktiv bubbla 2 (nedre högra) - små bubblor uppe till vänster, nuddar högra kant och varandra lite
+            const offsetX = sizes.active.width / 2 + miniHalfWidth - 5; // nuddar högra kant
+            const offsetY = sizes.active.height / 2 + miniHalfHeight - 5;
 
-          // Omvandla center till top-left
-          bubble.style.left = (miniCenterX - miniHalfWidth) + 'px';
-          bubble.style.top = (miniCenterY - miniHalfHeight) + 'px';
+            if (i === 0) {
+              bubble.style.left = (centerX - offsetX - miniHalfWidth - 80) + 'px';
+              bubble.style.top = (centerY - offsetY - miniHalfHeight - 20) + 'px';
+              bubble.style.right = '';
+              bubble.style.bottom = '';
+              bubble.style.transform = 'none';
+            }
+            if (i === 1) {
+              bubble.style.left = (centerX - offsetX - miniHalfWidth) + 'px';
+              bubble.style.top = (centerY - offsetY - miniHalfHeight) + 'px';
+              bubble.style.right = '';
+              bubble.style.bottom = '';
+              bubble.style.transform = 'none';
+            }
+          }
         }
       });
+
+      backBtn.classList.add('visible');
     }
 
-    // Event listeners
-
-    bubbles.forEach(bubble => {
+    bubbles.forEach((bubble, index) => {
       bubble.addEventListener('click', () => {
-        const index = parseInt(bubble.dataset.index);
-        setActivePositions(index);
+        if (bubble.classList.contains('active')) {
+          resetBubbles();
+        } else {
+          setActivePositions(index);
+        }
       });
     });
 
-    resetBtn.addEventListener('click', () => {
-      setDefaultPositions();
+    backBtn.addEventListener('click', () => {
+      resetBubbles();
     });
 
     // Init
-    setDefaultPositions();
-
+    resetBubbles();
   </script>
 </body>
 </html>
