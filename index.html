@@ -21,8 +21,8 @@
 
     .bubble {
       position: absolute;
-      width: 280px;
-      height: 180px;
+      width: 260px;
+      height: 160px;
       border-radius: 50% / 35%;
       background-color: rgba(0, 0, 255, 0.6);
       color: #fff;
@@ -48,15 +48,15 @@
       left: 15vw !important;
       top: 15vh !important;
       background-color: rgba(0, 0, 255, 0.85);
-      z-index: 5;
+      z-index: 4;
       flex-direction: column;
       font-size: 1.5rem;
     }
 
     .mini-bubble {
       position: absolute;
-      width: 200px;
-      height: 125px;
+      width: 180px;
+      height: 110px;
       border-radius: 50% / 35%;
       background-color: rgba(255, 255, 255, 1);
       color: #000;
@@ -67,7 +67,7 @@
       text-align: center;
       cursor: pointer;
       transition: all 0.6s ease-in-out;
-      z-index: 6;
+      z-index: 5;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     }
 
@@ -120,14 +120,9 @@
     };
 
     const positions = [
-      { top: "43%", left: "43%" },
-      { top: "41%", left: "45%" },
-      { top: "45%", left: "47%" }
-    ];
-
-    const miniBubbleOffsets = [
-      { top: '10%', left: '65%' },
-      { top: '65%', left: '15%' }
+      { top: "30%", left: "45%" },
+      { top: "50%", left: "30%" },
+      { top: "50%", left: "60%" }
     ];
 
     const bubbles = [...document.querySelectorAll('.bubble')];
@@ -142,6 +137,7 @@
     function handleClick(activeBubble) {
       const activeIndex = bubbles.indexOf(activeBubble);
       bubbles.forEach(b => b.style.pointerEvents = "none");
+
       const theme = activeBubble.dataset.theme;
       const details = themes[theme].map(i => `<li>${i}</li>`).join("");
       activeBubble.classList.add("active");
@@ -154,12 +150,17 @@
       miniGroup.id = 'miniGroup';
       container.appendChild(miniGroup);
 
+      const miniPositions = [
+        { top: '20%', left: '5%' },
+        { top: '50%', left: '10%' }
+      ];
+
       others.forEach((b, i) => {
         const mini = document.createElement('div');
         mini.className = 'mini-bubble';
         mini.innerText = b.dataset.theme;
-        mini.style.top = miniBubbleOffsets[i].top;
-        mini.style.left = miniBubbleOffsets[i].left;
+        mini.style.top = miniPositions[i].top;
+        mini.style.left = miniPositions[i].left;
         mini.onclick = () => {
           resetBubbles();
           setTimeout(() => handleClick(b), 500);
