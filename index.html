@@ -54,7 +54,6 @@
       line-height: 1.3;
     }
 
-    /* Standard storlek (utgångsläge) */
     .bubble.default {
       width: 260px;
       height: 160px;
@@ -62,7 +61,6 @@
       z-index: 1;
     }
 
-    /* Expanderad bubbla */
     .bubble.active {
       width: 500px;
       height: 300px;
@@ -71,7 +69,6 @@
       z-index: 10;
     }
 
-    /* Minimerade bubblor vid expanderad */
     .bubble.minimized {
       width: 140px;
       height: 90px;
@@ -191,21 +188,22 @@
 
           const centerX = (1000 - sizes.active.width) / 2 + sizes.active.width / 2;
           const centerY = (800 - sizes.active.height) / 2 + sizes.active.height / 2;
+
           const miniHalfWidth = sizes.minimized.width / 2;
           const miniHalfHeight = sizes.minimized.height / 2;
 
           if (activeIndex === 0) {
-            // Uppdaterad placering för små bubblor när bubbla 0 är aktiv
-            const offsetY = sizes.active.height / 2 + miniHalfHeight + 20;
-            const offsetX = 50;
+            // Små bubblor under den stora, men lite högre och med något bredare mellanrum
+            const offsetY = sizes.active.height / 2 + sizes.minimized.height / 2 + 40;
+            const offsetX = 120;
 
             if (i === 1) {
               bubble.style.left = (centerX - offsetX - miniHalfWidth) + 'px';
-              bubble.style.top = (centerY - offsetY - miniHalfHeight) + 'px';
+              bubble.style.top = (centerY + offsetY - miniHalfHeight) + 'px';
             }
             if (i === 2) {
               bubble.style.left = (centerX + offsetX - miniHalfWidth) + 'px';
-              bubble.style.top = (centerY - offsetY - miniHalfHeight) + 'px';
+              bubble.style.top = (centerY + offsetY - miniHalfHeight) + 'px';
             }
           } else if (activeIndex === 1) {
             const offsetX = sizes.active.width / 2 + miniHalfWidth - 5;
@@ -238,7 +236,7 @@
 
     bubbles.forEach(bubble => {
       bubble.addEventListener('click', () => {
-        const index = Number(bubble.dataset.index);
+        const index = parseInt(bubble.dataset.index);
         setActivePositions(index);
       });
     });
@@ -247,7 +245,7 @@
       setDefaultPositions();
     });
 
-    // Startläge
+    // Initial positions
     setDefaultPositions();
   </script>
 </body>
