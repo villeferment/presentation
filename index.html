@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="sv">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Interaktiv Bubbla Pyramid</title>
@@ -13,19 +13,18 @@
       align-items: center;
       height: 100vh;
       overflow: hidden;
-      position: relative;
     }
 
     .container {
       position: relative;
-      width: 900px;
-      height: 600px;
+      width: 1000px;
+      height: 800px;
     }
 
     .bubble {
       position: absolute;
-      width: 280px;
-      height: 170px;
+      width: 260px;
+      height: 160px;
       background-color: white;
       border-radius: 50% / 40%;
       box-shadow: 0 8px 20px rgba(0,0,0,0.1);
@@ -36,7 +35,7 @@
       padding: 20px;
       cursor: pointer;
       transition: all 0.6s ease;
-      z-index: 3;
+      z-index: 1;
     }
 
     .bubble h3 {
@@ -48,16 +47,13 @@
       display: none;
       font-size: 12px;
       margin-top: 10px;
-      white-space: pre-line; /* gör att radbrytningar visas */
+      white-space: pre-line;
     }
 
     .bubble.active {
       width: 500px;
       height: 300px;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 1;
+      z-index: 3;
     }
 
     .bubble.active p {
@@ -66,152 +62,107 @@
 
     .bubble.minimized {
       width: 140px;
-      height: 100px;
+      height: 90px;
       font-size: 10px;
-      z-index: 4;
+      z-index: 2;
     }
 
-    /* Ursprunglig layout – närmare varandra nedtill */
-    .bubble[data-index="0"] {
-      top: 25%;
-      left: 50%;
-      transform: translate(-50%, 0);
-    }
-
-    .bubble[data-index="1"] {
-      bottom: 20%;
-      left: 25%;
-      transform: translate(0, 0);
-    }
-
-    .bubble[data-index="2"] {
-      bottom: 20%;
-      right: 25%;
-      transform: translate(0, 0);
-    }
-
-    #back-button {
+    #resetBtn {
       position: absolute;
       top: 20px;
-      left: 20px;
-      padding: 10px 15px;
-      font-size: 14px;
-      border: none;
-      border-radius: 5px;
+      right: 20px;
+      padding: 10px 20px;
       background-color: #333;
       color: white;
+      border: none;
       cursor: pointer;
-      display: none;
       z-index: 10;
-    }
-
-    #back-button:hover {
-      background-color: #555;
+      border-radius: 5px;
     }
   </style>
 </head>
 <body>
-  <button id="back-button">Tillbaka</button>
-
   <div class="container">
-    <div class="bubble" data-index="0" data-title="Separate and intertwined relation as an entity"
-      data-description="Eye contact\nTiming\nSpeed\nDirection in space\nGracefulness">
+    <button id="resetBtn">Tillbaka</button>
+    <div class="bubble" data-index="0" data-title="Bodily experience of movement"
+      data-description="Embodied experience from within\nBeing in the movement\nPrior knowledge in relation to the phenomenon">
       <div class="content">
-        <h3>Separate and intertwined relation as an entity</h3>
-        <p></p>
+        <h3>Bodily experience of movement</h3>
+        <p>Embodied experience from within\nBeing in the movement\nPrior knowledge in relation to the phenomenon</p>
       </div>
     </div>
 
     <div class="bubble" data-index="1" data-title="Simultaneous experience of subject-object"
-      data-description="Attention with and through the body\nListening with and through the body\nOpenness to oneself\nCollaborative work">
+      data-description="Listening with and through the body\nOpenness to oneself and the collaborative work\nAttention with and through the body">
       <div class="content">
         <h3>Simultaneous experience of subject-object</h3>
-        <p></p>
+        <p>Listening with and through the body\nOpenness to oneself and the collaborative work\nAttention with and through the body</p>
       </div>
     </div>
 
-    <div class="bubble" data-index="2" data-title="Bodily experience of movement"
-      data-description="Embodied experience from within\nBeing in the movement\nPrior knowledge in relation to the phenomenon">
+    <div class="bubble" data-index="2" data-title="Separate and intertwined relation as an entity"
+      data-description="Eye contact\nTiming\nSpeed\nDirection in space\nGracefulness">
       <div class="content">
-        <h3>Bodily experience of movement</h3>
-        <p></p>
+        <h3>Separate and intertwined relation as an entity</h3>
+        <p>Eye contact\nTiming\nSpeed\nDirection in space\nGracefulness</p>
       </div>
     </div>
   </div>
 
   <script>
     const bubbles = document.querySelectorAll('.bubble');
-    const backButton = document.getElementById('back-button');
+    const resetBtn = document.getElementById('resetBtn');
 
-    const positions = [
-      { top: '25%', left: '50%', bottom: '', right: '', transform: 'translate(-50%, 0)' },
-      { top: '', left: '25%', bottom: '20%', right: '', transform: 'translate(0, 0)' },
-      { top: '', left: '', bottom: '20%', right: '25%', transform: 'translate(0, 0)' }
-    ];
+    const layoutPositions = {
+      default: [
+        { top: '10%', left: '50%', transform: 'translate(-50%, 0)' }, // top
+        { bottom: '10%', left: '28%', transform: 'translate(-50%, 0)' }, // bottom-left
+        { bottom: '10%', right: '28%', transform: 'translate(50%, 0)' } // bottom-right
+      ],
+      active: [
+        { top: 'calc(50% - 150px)', left: 'calc(50% - 250px)', transform: 'none' },
+        { top: 'calc(50% + 160px)', left: 'calc(50% - 380px)', transform: 'none' },
+        { top: 'calc(50% + 160px)', left: 'calc(50% + 380px)', transform: 'none' },
+      ]
+    };
+
+    function applyPosition(bubble, pos) {
+      Object.assign(bubble.style, {
+        top: pos.top || '',
+        bottom: pos.bottom || '',
+        left: pos.left || '',
+        right: pos.right || '',
+        transform: pos.transform || ''
+      });
+    }
 
     function resetBubbles() {
-      bubbles.forEach((bub, index) => {
-        bub.classList.remove('active', 'minimized');
-        Object.assign(bub.style, positions[index]);
-        bub.querySelector('h3').textContent = bub.dataset.title;
-        bub.querySelector('p').textContent = bub.dataset.description;
+      bubbles.forEach((bubble, index) => {
+        bubble.classList.remove('active', 'minimized');
+        applyPosition(bubble, layoutPositions.default[index]);
+        bubble.querySelector('h3').textContent = bubble.dataset.title;
       });
-      backButton.style.display = 'none';
     }
 
     function activateBubble(activeIndex) {
-      const moveOffset = 100;
-
-      bubbles.forEach((bub, index) => {
+      bubbles.forEach((bubble, index) => {
         if (index === activeIndex) {
-          bub.classList.add('active');
-          bub.classList.remove('minimized');
-          bub.querySelector('h3').textContent = bub.dataset.title;
-          bub.querySelector('p').textContent = bub.dataset.description;
+          bubble.classList.add('active');
+          bubble.classList.remove('minimized');
+          applyPosition(bubble, layoutPositions.active[0]);
         } else {
-          bub.classList.add('minimized');
-          bub.classList.remove('active');
-
-          const original = positions[index];
-          let newTop = original.top;
-          let newBottom = original.bottom;
-          let newLeft = original.left;
-          let newRight = original.right;
-
-          if (activeIndex === 0) {
-            // Klick på översta – flytta ned andra två
-            if (original.top) newTop = `calc(${original.top} + ${moveOffset}px)`;
-            if (original.bottom) newBottom = `calc(${original.bottom} - ${moveOffset}px)`;
-          } else if (activeIndex === 2) {
-            // Klick på nedre höger – flytta andra två snett uppåt vänster
-            if (original.top) newTop = `calc(${original.top} - ${moveOffset}px)`;
-            if (original.bottom) newBottom = `calc(${original.bottom} + ${moveOffset}px)`;
-            if (original.left) newLeft = `calc(${original.left} - ${moveOffset}px)`;
-            if (original.right) newRight = `calc(${original.right} + ${moveOffset}px)`;
-          } else if (activeIndex === 1) {
-            // Klick på nedre vänster – flytta andra två snett uppåt höger
-            if (original.top) newTop = `calc(${original.top} - ${moveOffset}px)`;
-            if (original.bottom) newBottom = `calc(${original.bottom} + ${moveOffset}px)`;
-            if (original.left) newLeft = `calc(${original.left} + ${moveOffset}px)`;
-            if (original.right) newRight = `calc(${original.right} - ${moveOffset}px)`;
-          }
-
-          Object.assign(bub.style, {
-            top: newTop || '',
-            bottom: newBottom || '',
-            left: newLeft || '',
-            right: newRight || '',
-            transform: original.transform
-          });
+          bubble.classList.remove('active');
+          bubble.classList.add('minimized');
+          const isLeft = index === 1;
+          const pos = isLeft ? layoutPositions.active[1] : layoutPositions.active[2];
+          applyPosition(bubble, pos);
         }
       });
-
-      backButton.style.display = 'block';
     }
 
-    bubbles.forEach((bub, index) => {
-      bub.addEventListener('click', () => {
-        const isActive = bub.classList.contains('active');
+    bubbles.forEach((bubble, index) => {
+      bubble.addEventListener('click', () => {
+        const isActive = bubble.classList.contains('active');
         if (isActive) {
           resetBubbles();
         } else {
@@ -220,7 +171,7 @@
       });
     });
 
-    backButton.addEventListener('click', resetBubbles);
+    resetBtn.addEventListener('click', resetBubbles);
 
     resetBubbles();
   </script>
