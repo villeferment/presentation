@@ -21,8 +21,8 @@
 
     .bubble {
       position: absolute;
-      width: 300px;
-      height: 200px;
+      width: 280px;
+      height: 180px;
       border-radius: 50% / 35%;
       background-color: rgba(0, 0, 255, 0.6);
       color: #fff;
@@ -32,7 +32,7 @@
       text-align: center;
       padding: 10px;
       cursor: pointer;
-      transition: all 0.6s ease;
+      transition: all 0.8s ease-in-out;
       font-weight: bold;
       font-size: 1rem;
       z-index: 2;
@@ -55,8 +55,8 @@
 
     .mini-bubble {
       position: absolute;
-      width: 160px;
-      height: 100px;
+      width: 180px;
+      height: 110px;
       border-radius: 50% / 35%;
       background-color: rgba(255, 255, 255, 1);
       color: #000;
@@ -66,8 +66,8 @@
       justify-content: center;
       text-align: center;
       cursor: pointer;
-      transition: all 0.5s ease;
-      z-index: 10;
+      transition: all 0.6s ease-in-out;
+      z-index: 6;
     }
 
     .bubble ul {
@@ -122,32 +122,32 @@
     };
 
     const positions = [
-      { top: "30%", left: "30%" },
-      { top: "30%", left: "55%" },
-      { top: "55%", left: "30%" },
-      { top: "55%", left: "55%" }
+      { top: "40%", left: "45%" },
+      { top: "30%", left: "35%" },
+      { top: "50%", left: "35%" },
+      { top: "40%", left: "25%" }
     ];
 
     const miniPositionSets = {
       0: [
-        { top: '70%', left: '70%' },
-        { top: '80%', left: '75%' },
-        { top: '75%', left: '85%' }
+        { top: '10%', left: '70%' },
+        { top: '20%', left: '80%' },
+        { top: '30%', left: '70%' }
       ],
       1: [
-        { top: '70%', left: '10%' },
-        { top: '80%', left: '15%' },
-        { top: '75%', left: '25%' }
+        { top: '70%', left: '70%' },
+        { top: '80%', left: '80%' },
+        { top: '90%', left: '70%' }
       ],
       2: [
-        { top: '10%', left: '70%' },
-        { top: '15%', left: '80%' },
-        { top: '20%', left: '75%' }
+        { top: '70%', left: '10%' },
+        { top: '80%', left: '20%' },
+        { top: '90%', left: '10%' }
       ],
       3: [
         { top: '10%', left: '10%' },
-        { top: '15%', left: '20%' },
-        { top: '20%', left: '15%' }
+        { top: '20%', left: '20%' },
+        { top: '30%', left: '10%' }
       ]
     };
 
