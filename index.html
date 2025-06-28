@@ -36,6 +36,7 @@
       cursor: pointer;
       transition: all 0.6s ease;
       z-index: 1;
+      box-sizing: border-box;
     }
 
     .bubble h3 {
@@ -88,7 +89,7 @@
       data-description="Embodied experience from within\nBeing in the movement\nPrior knowledge in relation to the phenomenon">
       <div class="content">
         <h3>Bodily experience of movement</h3>
-        <p>Embodied experience from within\nBeing in the movement\nPrior knowledge in relation to the phenomenon</p>
+        <p>Embodied experience from within<br>Being in the movement<br>Prior knowledge in relation to the phenomenon</p>
       </div>
     </div>
 
@@ -96,7 +97,7 @@
       data-description="Listening with and through the body\nOpenness to oneself and the collaborative work\nAttention with and through the body">
       <div class="content">
         <h3>Simultaneous experience of subject-object</h3>
-        <p>Listening with and through the body\nOpenness to oneself and the collaborative work\nAttention with and through the body</p>
+        <p>Listening with and through the body<br>Openness to oneself and the collaborative work<br>Attention with and through the body</p>
       </div>
     </div>
 
@@ -104,7 +105,7 @@
       data-description="Eye contact\nTiming\nSpeed\nDirection in space\nGracefulness">
       <div class="content">
         <h3>Separate and intertwined relation as an entity</h3>
-        <p>Eye contact\nTiming\nSpeed\nDirection in space\nGracefulness</p>
+        <p>Eye contact<br>Timing<br>Speed<br>Direction in space<br>Gracefulness</p>
       </div>
     </div>
   </div>
@@ -113,66 +114,174 @@
     const bubbles = document.querySelectorAll('.bubble');
     const resetBtn = document.getElementById('resetBtn');
 
-    const layoutPositions = {
-      default: [
-        { top: '10%', left: '50%', transform: 'translate(-50%, 0)' }, // top
-        { bottom: '10%', left: '28%', transform: 'translate(-50%, 0)' }, // bottom-left
-        { bottom: '10%', right: '28%', transform: 'translate(50%, 0)' } // bottom-right
-      ],
-      active: [
-        { top: 'calc(50% - 150px)', left: 'calc(50% - 250px)', transform: 'none' },
-        { top: 'calc(50% + 160px)', left: 'calc(50% - 380px)', transform: 'none' },
-        { top: 'calc(50% + 160px)', left: 'calc(50% + 380px)', transform: 'none' },
-      ]
-    };
+    // Måtten på bubblor
+    const bubbleWidth = 260;
+    const bubbleHeight = 160;
+    const smallWidth = 140;
+    const smallHeight = 90;
+    const activeWidth = 500;
+    const activeHeight = 300;
 
-    function applyPosition(bubble, pos) {
-      Object.assign(bubble.style, {
-        top: pos.top || '',
-        bottom: pos.bottom || '',
-        left: pos.left || '',
-        right: pos.right || '',
-        transform: pos.transform || ''
-      });
+    // Pyramid i utgångsläge (kant mot kant):
+    // Vi räknar så att bubblorna nuddar exakt.
+    // Mellanrummet justeras efter bubbla-bredd/höjd.
+    // Placering i px från container (1000x800).
+
+    // Pyramid med kantkontakt:
+    // Bubbla 0: Top-center
+    // Bubbla 1 och 2: placerade så att de precis nuddar varandra och bubblan ovanför.
+
+    const defaultPositions = [
+      { top: 100, left: 370 },             // bubbla 0 (top)
+      { top: 100 + bubbleHeight - 10, left: 370 - bubbleWidth / 2 + 20 },  // bubbla 1 (botten vänster)
+      { top: 100 + bubbleHeight - 10, left: 370 + bubbleWidth / 2 - smallWidth - 20 }   // bubbla 2 (botten höger)
+    ];
+
+    // Positioner för expanderad bubbla (centrerad horisontellt, lagom vertikalt)
+    // och små bubblor nuddar den stora kant i kant, bibehåller sin relativa position.
+    // Här räknar vi positionerna för små bubblor beroende på vilken bubbla som är aktiv.
+
+    // Funktionen nedan skapar positioner för minimerade bubblor kring den aktiva stora bubblan.
+    function getMinimizedPositions(activeIndex) {
+      // Aktiv bubbla placeras centrerad
+      const centerX = (1000 - activeWidth) / 2; // left
+      const centerY = (800 - activeHeight) / 2; // top
+
+      // Minimerade bubblor placeras så de nuddar den stora bubblan i kanten
+      // och behåller sin relativa position från default-pyramiden.
+
+      // Vi ska använda defaultPositions för att beräkna relativa offset.
+
+      let positions = [];
+
+      for (let i = 0; i < 3; i++) {
+        if (i === activeIndex) {
+          // Den aktiva bubblan - stor och centrerad
+          positions.push({ top: centerY, left: centerX });
+        } else {
+          // Räkna offset mellan bubblorna i utgångsläget
+          const offsetX = defaultPositions[i].left - defaultPositions[activeIndex].left;
+          const offsetY = defaultPositions[i].top - defaultPositions[activeIndex].top;
+
+          // Skala offset för mindre bubbla, men behåll kantkontakt
+          // Vi vet att stor bubbla är ca 500x300, liten 140x90
+
+          // Justera så små bubblor nuddar stora kanten - flytta lite utanför stora bubblan
+
+          // Avstånd från centrum av stor bubbla till kanten horisontellt/vertikalt
+          const bigCenterX = centerX + activeWidth / 2;
+          const bigCenterY = centerY + activeHeight / 2;
+
+          // Bubbla ska placeras precis så att kanterna nuddar:
+          // Flytta små bubblan från stor bubbla kant i riktning offset.
+
+          // Vi kan beräkna riktning som unit vector:
+          const distX = offsetX;
+          const distY = offsetY;
+          const dist = Math.sqrt(distX * distX + distY * distY);
+
+          // Unit vector
+          const ux = distX / dist;
+          const uy = distY / dist;
+
+          // Avstånd kant till kant för stora och små bubblor:
+          // Vi approximera horisontellt med halvbredd och vertikalt med halvhöjd,
+          // eftersom bubblorna är ovala blir det enklare så.
+
+          // Halvbredd/halvhöjd på bubblorna:
+          const bigHalfWidth = activeWidth / 2;
+          const bigHalfHeight = activeHeight / 2;
+          const smallHalfWidth = smallWidth / 2;
+          const smallHalfHeight = smallHeight / 2;
+
+          // Vi tar maximal horisontell/vertikal avstånd beroende på riktning
+          // för att approximera kantkontakt:
+
+          // Skalningsfaktor för horisontell och vertikal kantkontakt
+          // tar hänsyn till bubbelformens proportioner:
+          // Använd ett viktat avstånd baserat på riktningen:
+
+          // Approx avstånd kant-till-kant längs riktningen:
+          // Vi blandar x och y halvor baserat på riktningen
+          const bigRadiusAlongDir = Math.abs(ux) * bigHalfWidth + Math.abs(uy) * bigHalfHeight;
+          const smallRadiusAlongDir = Math.abs(ux) * smallHalfWidth + Math.abs(uy) * smallHalfHeight;
+
+          // Placera små bubblan så att dess kant just nuddar stora bubblan
+          // Position = centrum stor bubbla + (bigRadius + smallRadius) * unit vector - (small bubbla halv storlek) för att sätta top/left på bubbla
+
+          const posCenterX = bigCenterX + ux * (bigRadiusAlongDir + smallRadiusAlongDir);
+          const posCenterY = bigCenterY + uy * (bigRadiusAlongDir + smallRadiusAlongDir);
+
+          // Nu omvandla center till top-left (för små bubblor)
+          const posLeft = posCenterX - smallHalfWidth;
+          const posTop = posCenterY - smallHalfHeight;
+
+          positions.push({ top: posTop, left: posLeft });
+        }
+      }
+
+      return positions;
     }
 
     function resetBubbles() {
       bubbles.forEach((bubble, index) => {
         bubble.classList.remove('active', 'minimized');
-        applyPosition(bubble, layoutPositions.default[index]);
+        const pos = defaultPositions[index];
+        bubble.style.width = bubbleWidth + 'px';
+        bubble.style.height = bubbleHeight + 'px';
+        bubble.style.fontSize = '14px';
+        bubble.style.zIndex = 1;
+        bubble.style.padding = '20px';
         bubble.querySelector('h3').textContent = bubble.dataset.title;
+        bubble.querySelector('p').style.display = 'none';
+        bubble.style.left = pos.left + 'px';
+        bubble.style.top = pos.top + 'px';
       });
     }
 
     function activateBubble(activeIndex) {
+      const positions = getMinimizedPositions(activeIndex);
+
       bubbles.forEach((bubble, index) => {
         if (index === activeIndex) {
           bubble.classList.add('active');
           bubble.classList.remove('minimized');
-          applyPosition(bubble, layoutPositions.active[0]);
+          bubble.style.width = activeWidth + 'px';
+          bubble.style.height = activeHeight + 'px';
+          bubble.style.fontSize = '18px';
+          bubble.style.zIndex = 3;
+          bubble.style.padding = '30px';
+          bubble.querySelector('h3').textContent = bubble.dataset.title;
+          bubble.querySelector('p').textContent = bubble.dataset.description.replace(/\\n/g, '\\n');
+          bubble.querySelector('p').style.display = 'block';
+          bubble.style.left = positions[index].left + 'px';
+          bubble.style.top = positions[index].top + 'px';
         } else {
-          bubble.classList.remove('active');
           bubble.classList.add('minimized');
-          const isLeft = index === 1;
-          const pos = isLeft ? layoutPositions.active[1] : layoutPositions.active[2];
-          applyPosition(bubble, pos);
+          bubble.classList.remove('active');
+          bubble.style.width = smallWidth + 'px';
+          bubble.style.height = smallHeight + 'px';
+          bubble.style.fontSize = '10px';
+          bubble.style.zIndex = 2;
+          bubble.style.padding = '10px';
+          bubble.querySelector('p').style.display = 'none';
+          bubble.style.left = positions[index].left + 'px';
+          bubble.style.top = positions[index].top + 'px';
         }
       });
     }
 
     bubbles.forEach((bubble, index) => {
       bubble.addEventListener('click', () => {
-        const isActive = bubble.classList.contains('active');
-        if (isActive) {
-          resetBubbles();
-        } else {
-          activateBubble(index);
-        }
+        activateBubble(index);
       });
     });
 
-    resetBtn.addEventListener('click', resetBubbles);
+    resetBtn.addEventListener('click', () => {
+      resetBubbles();
+    });
 
+    // Init
     resetBubbles();
   </script>
 </body>
