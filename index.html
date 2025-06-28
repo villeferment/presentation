@@ -24,8 +24,8 @@
 
     .bubble {
       position: absolute;
-      width: 220px;
-      height: 140px;
+      width: 260px;
+      height: 160px;
       background-color: white;
       border-radius: 50% / 40%;
       box-shadow: 0 8px 20px rgba(0,0,0,0.1);
@@ -64,28 +64,28 @@
     }
 
     .bubble.minimized {
-      width: 120px;
-      height: 80px;
+      width: 140px;
+      height: 100px;
       font-size: 10px;
       z-index: 4;
     }
 
-    /* Pyramidlayout med större avstånd mellan nedre bubblor */
+    /* Ursprunglig layout – mer separerade och större */
     .bubble[data-index="0"] {
-      top: 30%;
+      top: 25%;
       left: 50%;
       transform: translate(-50%, 0);
     }
 
     .bubble[data-index="1"] {
       bottom: 20%;
-      left: 20%;
+      left: 15%;
       transform: translate(0, 0);
     }
 
     .bubble[data-index="2"] {
       bottom: 20%;
-      right: 20%;
+      right: 15%;
       transform: translate(0, 0);
     }
 
@@ -143,9 +143,9 @@
     const backButton = document.getElementById('back-button');
 
     const positions = [
-      { top: '30%', left: '50%', right: '', bottom: '', transform: 'translate(-50%, 0)' },
-      { top: '', left: '20%', right: '', bottom: '20%', transform: 'translate(0, 0)' },
-      { top: '', left: '', right: '20%', bottom: '20%', transform: 'translate(0, 0)' }
+      { top: '25%', left: '50%', bottom: '', right: '', transform: 'translate(-50%, 0)' }, // top
+      { top: '', left: '15%', bottom: '20%', right: '', transform: 'translate(0, 0)' },     // bottom left
+      { top: '', left: '', bottom: '20%', right: '15%', transform: 'translate(0, 0)' }      // bottom right
     ];
 
     function resetBubbles() {
@@ -158,25 +158,28 @@
     }
 
     function activateBubble(activeIndex) {
+      const offsetY = 120; // Hur mycket de andra bubblorna flyttas nedåt
+
       bubbles.forEach((bub, index) => {
         if (index == activeIndex) {
           bub.classList.add('active');
           bub.classList.remove('minimized');
           bub.querySelector('h3').textContent = bub.dataset.title;
           bub.querySelector('p').textContent = bub.dataset.description;
+          // Centreras automatiskt med active CSS
         } else {
           bub.classList.add('minimized');
           bub.classList.remove('active');
 
-          const origin = positions[index];
-          const offsetX = origin.left ? '-15%' : (origin.right ? '15%' : '0');
+          // Behåll relation men flytta vertikalt nedåt för att undvika överlapp
+          const original = positions[index];
 
           Object.assign(bub.style, {
-            top: origin.top || '',
-            bottom: origin.bottom || '',
-            left: origin.left ? `calc(${origin.left} ${offsetX})` : '',
-            right: origin.right ? `calc(${origin.right} ${offsetX})` : '',
-            transform: 'translate(0, 0)',
+            top: original.top ? `calc(${original.top} + ${offsetY}px)` : '',
+            bottom: original.bottom ? `calc(${original.bottom} - ${offsetY}px)` : '',
+            left: original.left || '',
+            right: original.right || '',
+            transform: original.transform,
           });
         }
       });
@@ -197,7 +200,7 @@
 
     backButton.addEventListener('click', resetBubbles);
 
-    // Init
+    // Startläge
     resetBubbles();
   </script>
 </body>
