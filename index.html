@@ -1,118 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Animated Bubbles</title>
+  <meta charset="UTF-8" />
+  <title>Interaktiv Bubbla Pyramid</title>
   <style>
     body {
       margin: 0;
-      background: #f5f5f5;
       font-family: sans-serif;
-      height: 100vh;
+      background-color: #f2f2f2;
       display: flex;
       justify-content: center;
       align-items: center;
+      height: 100vh;
       overflow: hidden;
     }
 
     .container {
       position: relative;
-      width: 600px;
-      height: 500px;
+      width: 800px;
+      height: 600px;
     }
 
     .bubble {
       position: absolute;
-      width: 250px;
-      height: 250px;
-      background: white;
-      border-radius: 50%;
+      width: 220px;
+      height: 140px;
+      background-color: white;
+      border-radius: 50% / 40%;
       box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
       text-align: center;
-      padding: 30px;
-      opacity: 0;
-      transform: translate(-50%, -50%) scale(0.5);
-      animation: floatOut 1.5s ease-out forwards;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.6s ease;
+      z-index: 1;
     }
 
     .bubble h3 {
-      font-size: 16px;
-      margin-bottom: 10px;
+      margin: 0;
+      font-size: 14px;
     }
 
     .bubble p {
-      font-size: 13px;
+      display: none;
+      font-size: 12px;
+      margin-top: 10px;
     }
 
-    .bubble1 {
-      animation-delay: 0.2s;
+    .bubble.active {
+      width: 500px;
+      height: 300px;
+      z-index: 3;
     }
 
-    .bubble2 {
-      animation-delay: 0.4s;
+    .bubble.active p {
+      display: block;
     }
 
-    .bubble3 {
-      animation-delay: 0.6s;
+    .bubble.minimized {
+      width: 120px;
+      height: 80px;
+      font-size: 10px;
+      z-index: 2;
     }
 
-    @keyframes floatOut {
-      0% {
-        top: 50%;
-        left: 50%;
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.5);
-      }
-      100% {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-
-    /* Final positions */
-    .bubble1 {
+    /* Initial pyramid layout */
+    .bubble[data-index="0"] {
       top: 10%;
       left: 50%;
       transform: translate(-50%, 0);
     }
 
-    .bubble2 {
-      bottom: 5%;
-      left: 15%;
+    .bubble[data-index="1"] {
+      bottom: 10%;
+      left: 20%;
       transform: translate(0, 0);
     }
 
-    .bubble3 {
-      bottom: 5%;
-      right: 15%;
+    .bubble[data-index="2"] {
+      bottom: 10%;
+      right: 20%;
       transform: translate(0, 0);
-    }
-
-    .bubble:hover {
-      transform: scale(1.05);
-      z-index: 2;
-      transition: transform 0.3s;
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <div class="bubble" data-index="0" data-title="Separate and intertwined relation as an entity"
+      data-description="Eye contact, timing, speed, direction in space, gracefulness">
+      <div class="content">
+        <h3>Separate and intertwined relation as an entity</h3>
+        <p>Eye contact, timing, speed, direction in space, gracefulness</p>
+      </div>
+    </div>
 
-<div class="container">
-  <div class="bubble bubble1">
-    <h3>Separate and intertwined relation as an entity</h3>
-    <p>Eye contact, timing, speed, direction in space, gracefulness</p>
+    <div class="bubble" data-index="1" data-title="Simultaneous experience of subject-object"
+      data-description="Listening with and through the body, openness to oneself and the collaborative work">
+      <div class="content">
+        <h3>Simultaneous experience of subject-object</h3>
+        <p>Listening with and through the body, openness to oneself and the collaborative work</p>
+      </div>
+    </div>
+
+    <div class="bubble" data-index="2" data-title="Attention with and through the body – Bodily experience of movement"
+      data-description="Embodied experience from within, being in the movement, prior knowledge in relation to the phenomenon">
+      <div class="content">
+        <h3>Attention with and through the body – Bodily experience of movement</h3>
+        <p>Embodied experience from within, being in the movement, prior knowledge in relation to the phenomenon</p>
+      </div>
+    </div>
   </div>
 
-  <div class="bubble bubble2">
-    <h3>Simultaneous experience of subject-object</h3>
-    <p>Listening with and through the body, openness to oneself and the collaborative work</p>
-  </div>
+  <script>
+    const bubbles = document.querySelectorAll('.bubble');
 
-  <div class="bubble bubble3">
-    <h3>Attention with and through the body<br>Bodily experience of movement</h3>
-    <p>Embodied experience from within, being in the movement, prior knowledge in relation to the phenomenon</p>
-  </div>
-</div>
+    const positions = [
+      { top: '10%', left: '50%', right: '', bottom: '', transform: 'translate(-50%, 0)' },
+      { top: '', left: '20%', right: '', bottom: '10%', transform: 'translate(0, 0)' },
+      { top: '', left: '', right: '20%', bottom: '10%', transform: 'translate(0, 0)' }
+    ];
 
+    function resetBubbles() {
+      bubbles.forEach((bub, index) => {
+        bub.classList.remove('active', 'minimized');
+        Object.assign(bub.style, positions[index]);
+        bub.querySelector('h3').textContent = bub.dataset.title;
+      });
+    }
+
+    function activateBubble(activeIndex) {
+      bubbles.forEach((bub, index) => {
+        if (index == activeIndex) {
+          bub.classList.add('active');
+          bub.classList.remove('minimized');
+          bub.querySelector('h3').textContent = bub.dataset.title;
+          bub.querySelector('p').textContent = bub.dataset.description;
+        } else {
+          bub.classList.add('minimized');
+          bub.classList.remove('active');
+
+          // move to opposite side of original
+          const origin = positions[index];
+          const offsetX = origin.left ? '-15%' : (origin.right ? '15%' : '0');
+          const offsetY = origin.top ? '20%' : '-20%';
+
+          Object.assign(bub.style, {
+            top: origin.top || '',
+            bottom: origin.bottom || '',
+            left: origin.left ? `calc(${origin.left} ${offsetX})` : '',
+            right: origin.right ? `calc(${origin.right} ${offsetX})` : '',
+            transform: 'translate(0, 0)',
+          });
+        }
+      });
+    }
+
+    bubbles.forEach((bub, index) => {
+      bub.addEventListener('click', () => {
+        const isActive = bub.classList.contains('active');
+        if (isActive) {
+          resetBubbles();
+        } else {
+          activateBubble(index);
+        }
+      });
+    });
+
+    // Initial reset for correct positioning
+    resetBubbles();
+  </script>
 </body>
 </html>
