@@ -2,7 +2,7 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8" />
-  <title>Bubbla Pyramid med större justeringar</title>
+  <title>Bubbla Pyramid med justerad utgångsposition</title>
   <style>
     body {
       margin: 0;
@@ -136,13 +136,18 @@
     const wMini = sizes.minimized.width;
     const hMini = sizes.minimized.height;
 
-    const posDefault = [
-      { top: 100, left: 370 },
-      { top: 100 + hDefault * 0.85, left: 370 - wDefault * 0.5 + 10 },
-      { top: 100 + hDefault * 0.85, left: 370 + wDefault * 0.5 - 10 }
-    ];
-
     function setDefaultPositions() {
+      const containerWidth = 1000;
+      const containerHeight = 800;
+      const centerX = containerWidth / 2;
+      const topOffset = 180;
+
+      const posDefault = [
+        { top: topOffset, left: centerX - wDefault / 2 },
+        { top: topOffset + hDefault * 0.85, left: centerX - wDefault - 10 },
+        { top: topOffset + hDefault * 0.85, left: centerX + 10 }
+      ];
+
       bubbles.forEach((bubble, i) => {
         bubble.classList.remove('active', 'minimized');
         bubble.classList.add('default');
@@ -186,14 +191,14 @@
 
           const centerX = (containerWidth - wActive) / 2 + wActive / 2;
           const centerY = (containerHeight - hActive) / 2 + hActive / 2;
+
           const miniHalfW = wMini / 2;
           const miniHalfH = hMini / 2;
 
           if (activeIndex === 0) {
-            // Övre bubbla aktiv – de nedre närmare varandra
             const bigTop = (containerHeight - hActive) / 2;
             const miniTop = bigTop + hActive - miniHalfH;
-            const offsetX = 70;
+            const offsetX = 130;
 
             if (i === 1) {
               bubble.style.left = (centerX - offsetX - miniHalfW) + 'px';
@@ -205,12 +210,11 @@
             }
 
           } else if (activeIndex === 2) {
-            // Högra nedre bubbla aktiv – övre sänks 10px
             const bigLeft = (containerWidth - wActive) / 2;
             const bigTop = (containerHeight - hActive) / 2;
 
             if (i === 0) {
-              bubble.style.left = (bigLeft - miniHalfW + 25) + 'px';
+              bubble.style.left = (bigLeft - miniHalfW + 30) + 'px';
               bubble.style.top = (bigTop - miniHalfH + 10) + 'px';
             }
             if (i === 1) {
@@ -219,7 +223,6 @@
             }
 
           } else if (activeIndex === 1) {
-            // Vänstra nedre bubbla aktiv
             const bigLeft = (containerWidth - wActive) / 2;
             const bigTop = (containerHeight - hActive) / 2;
             const bigRight = bigLeft + wActive;
@@ -248,7 +251,6 @@
       setDefaultPositions();
     });
 
-    // Init
     setDefaultPositions();
   </script>
 </body>
