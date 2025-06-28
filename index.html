@@ -1,192 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Interactive Bubbles Presentation</title>
+  <meta charset="UTF-8">
+  <title>Animated Bubbles</title>
   <style>
     body {
       margin: 0;
-      padding: 0;
-      background: #f3f3f3;
-      font-family: 'Helvetica Neue', sans-serif;
+      background: #f5f5f5;
+      font-family: sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       overflow: hidden;
     }
 
-    .bubble-container {
+    .container {
       position: relative;
-      width: 100vw;
-      height: 100vh;
+      width: 600px;
+      height: 500px;
     }
 
     .bubble {
       position: absolute;
-      width: 260px;
-      height: 160px;
-      border-radius: 50% / 35%;
-      background-color: rgba(0, 0, 255, 0.6);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 250px;
+      height: 250px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
       text-align: center;
-      padding: 10px;
-      cursor: pointer;
-      transition: all 0.8s ease-in-out;
-      font-weight: bold;
-      font-size: 1rem;
-      z-index: 2;
+      padding: 30px;
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.5);
+      animation: floatOut 1.5s ease-out forwards;
+    }
+
+    .bubble h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .bubble p {
+      font-size: 13px;
+    }
+
+    .bubble1 {
+      animation-delay: 0.2s;
+    }
+
+    .bubble2 {
+      animation-delay: 0.4s;
+    }
+
+    .bubble3 {
+      animation-delay: 0.6s;
+    }
+
+    @keyframes floatOut {
+      0% {
+        top: 50%;
+        left: 50%;
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* Final positions */
+    .bubble1 {
+      top: 10%;
+      left: 50%;
+      transform: translate(-50%, 0);
+    }
+
+    .bubble2 {
+      bottom: 5%;
+      left: 15%;
+      transform: translate(0, 0);
+    }
+
+    .bubble3 {
+      bottom: 5%;
+      right: 15%;
+      transform: translate(0, 0);
     }
 
     .bubble:hover {
-      filter: brightness(1.2);
-    }
-
-    .active {
-      width: 70vw;
-      height: 70vh;
-      left: 15vw !important;
-      top: 15vh !important;
-      background-color: rgba(0, 0, 255, 0.85);
-      z-index: 4;
-      flex-direction: column;
-      font-size: 1.5rem;
-    }
-
-    .mini-bubble {
-      position: absolute;
-      width: 180px;
-      height: 110px;
-      border-radius: 50% / 35%;
-      background-color: rgba(255, 255, 255, 1);
-      color: #000;
-      font-size: 0.7rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.6s ease-in-out;
-      z-index: 5;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    }
-
-    .bubble ul {
-      margin-top: 10px;
-      font-size: 1rem;
-      list-style: none;
-      padding: 0;
-    }
-
-    .back-btn {
-      display: none;
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      padding: 10px 20px;
-      background: #222;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      z-index: 20;
+      transform: scale(1.05);
+      z-index: 2;
+      transition: transform 0.3s;
     }
   </style>
 </head>
 <body>
-  <div class="bubble-container">
-    <button class="back-btn" onclick="resetBubbles()">Tillbaka</button>
-    <div class="bubble" id="bubble1" data-theme="Separate and intertwined relation as an entity">Separate and intertwined relation as an entity</div>
-    <div class="bubble" id="bubble2" data-theme="Simultaneous experience of subject-object">Simultaneous experience of subject-object</div>
-    <div class="bubble" id="bubble3" data-theme="Bodily experience of movement">Bodily experience of movement</div>
+
+<div class="container">
+  <div class="bubble bubble1">
+    <h3>Separate and intertwined relation as an entity</h3>
+    <p>Eye contact, timing, speed, direction in space, gracefulness</p>
   </div>
 
-  <script>
-    const themes = {
-      "Separate and intertwined relation as an entity": [
-        "Eye contact", "Timing", "Speed", "Direction in space", "Gracefulness",
-        "Multiple perspectives", "Focused distance", "Intentional observation"
-      ],
-      "Simultaneous experience of subject-object": [
-        "Listening with and through the body",
-        "Openness to oneself and collaborative work",
-        "Attention with and through the body"
-      ],
-      "Bodily experience of movement": [
-        "Embodied experience from within",
-        "Being in the movement",
-        "Prior knowledge in relation to the phenomenon"
-      ]
-    };
+  <div class="bubble bubble2">
+    <h3>Simultaneous experience of subject-object</h3>
+    <p>Listening with and through the body, openness to oneself and the collaborative work</p>
+  </div>
 
-    const positions = [
-      { top: "30%", left: "45%" },
-      { top: "50%", left: "30%" },
-      { top: "50%", left: "60%" }
-    ];
+  <div class="bubble bubble3">
+    <h3>Attention with and through the body<br>Bodily experience of movement</h3>
+    <p>Embodied experience from within, being in the movement, prior knowledge in relation to the phenomenon</p>
+  </div>
+</div>
 
-    const bubbles = [...document.querySelectorAll('.bubble')];
-    const container = document.querySelector('.bubble-container');
-    const backBtn = document.querySelector('.back-btn');
-
-    bubbles.forEach((b, i) => {
-      b.style.top = positions[i].top;
-      b.style.left = positions[i].left;
-    });
-
-    function handleClick(activeBubble) {
-      const activeIndex = bubbles.indexOf(activeBubble);
-      bubbles.forEach(b => b.style.pointerEvents = "none");
-
-      const theme = activeBubble.dataset.theme;
-      const details = themes[theme].map(i => `<li>${i}</li>`).join("");
-      activeBubble.classList.add("active");
-      activeBubble.innerHTML = `<div>${theme}</div><ul>${details}</ul>`;
-
-      const others = bubbles.filter(b => b !== activeBubble);
-      others.forEach(b => b.style.display = 'none');
-
-      const miniGroup = document.createElement('div');
-      miniGroup.id = 'miniGroup';
-      container.appendChild(miniGroup);
-
-      const miniPositions = [
-        { top: '20%', left: '5%' },
-        { top: '50%', left: '10%' }
-      ];
-
-      others.forEach((b, i) => {
-        const mini = document.createElement('div');
-        mini.className = 'mini-bubble';
-        mini.innerText = b.dataset.theme;
-        mini.style.top = miniPositions[i].top;
-        mini.style.left = miniPositions[i].left;
-        mini.onclick = () => {
-          resetBubbles();
-          setTimeout(() => handleClick(b), 500);
-        };
-        miniGroup.appendChild(mini);
-      });
-
-      backBtn.style.display = 'block';
-    }
-
-    function resetBubbles() {
-      document.getElementById('miniGroup')?.remove();
-      bubbles.forEach((b, i) => {
-        b.classList.remove('active');
-        b.innerHTML = b.dataset.theme;
-        b.style.top = positions[i].top;
-        b.style.left = positions[i].left;
-        b.style.display = 'flex';
-        b.style.pointerEvents = "auto";
-      });
-      backBtn.style.display = 'none';
-    }
-
-    bubbles.forEach(b => {
-      b.addEventListener("click", () => handleClick(b));
-    });
-  </script>
 </body>
 </html>
