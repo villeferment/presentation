@@ -2,7 +2,7 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8" />
-  <title>Bubbla Pyramid med z-index och Pyramid utgångsläge</title>
+  <title>Bubbla Pyramid med små justeringar</title>
   <style>
     body {
       margin: 0;
@@ -57,7 +57,7 @@
       width: 260px;
       height: 160px;
       font-size: 14px;
-      z-index: 1; /* Utgångsläget låg z-index */
+      z-index: 1;
     }
 
     .bubble.active {
@@ -73,7 +73,6 @@
       height: 90px;
       font-size: 11px;
       padding: 12px 10px;
-      /* Vi ger små bubblor högre z-index än stor bubbla när expanderad */
       z-index: 20;
     }
 
@@ -137,11 +136,10 @@
     const wMini = sizes.minimized.width;
     const hMini = sizes.minimized.height;
 
-    // Pyramid-position utgångsläge, kant mot kant så bubblorna sitter ihop
     const posDefault = [
-      { top: 100, left: 370 },                   // Övre bubbla
-      { top: 100 + hDefault * 0.85, left: 370 - wDefault * 0.5 + 10 }, // Vänster nedre bubbla, lite inskjuten 10px för snygg kantkontakt
-      { top: 100 + hDefault * 0.85, left: 370 + wDefault * 0.5 - 10 }  // Högra nedre bubbla, lite inskjuten 10px
+      { top: 100, left: 370 },                   
+      { top: 100 + hDefault * 0.85, left: 370 - wDefault * 0.5 + 10 }, 
+      { top: 100 + hDefault * 0.85, left: 370 + wDefault * 0.5 - 10 }  
     ];
 
     function setDefaultPositions() {
@@ -183,7 +181,7 @@
           bubble.style.height = hMini + 'px';
           bubble.style.fontSize = '11px';
           bubble.style.padding = '12px 10px';
-          bubble.style.zIndex = 20; // ALLTID över den stora expanderade bubblan
+          bubble.style.zIndex = 20;
           bubble.querySelector('p').style.display = 'none';
 
           const centerX = (containerWidth - wActive) / 2 + wActive / 2;
@@ -193,8 +191,7 @@
           const miniHalfH = hMini / 2;
 
           if (activeIndex === 0) {
-            // Övre bubblan expanderad
-            // Små bubblor precis under som nuddar stora bubblan i underkant
+            // Övre bubbla expanderad
             const bigTop = (containerHeight - hActive) / 2;
             const miniTop = bigTop + hActive - miniHalfH;
 
@@ -211,12 +208,12 @@
 
           } else if (activeIndex === 2) {
             // Högra nedre bubblan expanderad
-            // Övre och vänster nedre bubblan nuddar den stora bubblan i vänster övre kant
             const bigLeft = (containerWidth - wActive) / 2;
             const bigTop = (containerHeight - hActive) / 2;
 
             if (i === 0) {
-              bubble.style.left = (bigLeft - miniHalfW) + 'px';
+              // Övre bubbla flyttas pyttelite höger (ca 10 px)
+              bubble.style.left = (bigLeft - miniHalfW + 10) + 'px';
               bubble.style.top = (bigTop - miniHalfH) + 'px';
             }
             if (i === 1) {
@@ -226,14 +223,14 @@
 
           } else if (activeIndex === 1) {
             // Vänstra nedre bubblan expanderad
-            // Högra nedre och övre bubblan nuddar den stora bubblan i högra överkant
             const bigLeft = (containerWidth - wActive) / 2;
             const bigTop = (containerHeight - hActive) / 2;
             const bigRight = bigLeft + wActive;
 
             if (i === 2) {
+              // Högra nedre bubbla flyttas ner lite (ca 15 px)
               bubble.style.left = (bigRight - miniHalfW) + 'px';
-              bubble.style.top = (bigTop - miniHalfH) + 'px';
+              bubble.style.top = (bigTop - miniHalfH + 15) + 'px';
             }
             if (i === 0) {
               bubble.style.left = (bigRight - miniHalfW * 1.8) + 'px';
