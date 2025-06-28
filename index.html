@@ -2,7 +2,7 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8" />
-  <title>Bubbla Pyramid med justerad utgångsposition</title>
+  <title>Bubbla Pyramid med större bubblor</title>
   <style>
     body {
       margin: 0;
@@ -54,8 +54,8 @@
     }
 
     .bubble.default {
-      width: 260px;
-      height: 160px;
+      width: 300px;
+      height: 180px;
       font-size: 14px;
       z-index: 1;
     }
@@ -124,7 +124,7 @@
     const resetBtn = document.getElementById('resetBtn');
 
     const sizes = {
-      default: { width: 260, height: 160 },
+      default: { width: 300, height: 180 },
       active: { width: 500, height: 300 },
       minimized: { width: 140, height: 90 }
     };
@@ -144,8 +144,8 @@
 
       const posDefault = [
         { top: topOffset, left: centerX - wDefault / 2 },
-        { top: topOffset + hDefault * 0.85, left: centerX - wDefault + 1 },
-        { top: topOffset + hDefault * 0.85, left: centerX - 1 }
+        { top: topOffset + hDefault * 0.9, left: centerX - wDefault + 10 },
+        { top: topOffset + hDefault * 0.9, left: centerX - 10 }
       ];
 
       bubbles.forEach((bubble, i) => {
