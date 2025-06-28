@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
   <meta charset="UTF-8" />
   <title>Interaktiv Bubbla Pyramid</title>
@@ -13,6 +13,7 @@
       align-items: center;
       height: 100vh;
       overflow: hidden;
+      position: relative;
     }
 
     .container {
@@ -35,7 +36,7 @@
       padding: 20px;
       cursor: pointer;
       transition: all 0.6s ease;
-      z-index: 1;
+      z-index: 3; /* Alla bubblor syns över aktiva */
     }
 
     .bubble h3 {
@@ -52,7 +53,10 @@
     .bubble.active {
       width: 500px;
       height: 300px;
-      z-index: 3;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1; /* Läggs bakom de små */
     }
 
     .bubble.active p {
@@ -63,10 +67,10 @@
       width: 120px;
       height: 80px;
       font-size: 10px;
-      z-index: 2;
+      z-index: 4; /* små bubblor ligger över den stora */
     }
 
-    /* Initial pyramid layout */
+    /* Pyramidlayout */
     .bubble[data-index="0"] {
       top: 10%;
       left: 50%;
@@ -84,9 +88,30 @@
       right: 20%;
       transform: translate(0, 0);
     }
+
+    #back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 10px 15px;
+      font-size: 14px;
+      border: none;
+      border-radius: 5px;
+      background-color: #333;
+      color: white;
+      cursor: pointer;
+      display: none;
+      z-index: 10;
+    }
+
+    #back-button:hover {
+      background-color: #555;
+    }
   </style>
 </head>
 <body>
+  <button id="back-button">Tillbaka</button>
+
   <div class="container">
     <div class="bubble" data-index="0" data-title="Separate and intertwined relation as an entity"
       data-description="Eye contact, timing, speed, direction in space, gracefulness">
@@ -115,6 +140,7 @@
 
   <script>
     const bubbles = document.querySelectorAll('.bubble');
+    const backButton = document.getElementById('back-button');
 
     const positions = [
       { top: '10%', left: '50%', right: '', bottom: '', transform: 'translate(-50%, 0)' },
@@ -128,6 +154,7 @@
         Object.assign(bub.style, positions[index]);
         bub.querySelector('h3').textContent = bub.dataset.title;
       });
+      backButton.style.display = 'none';
     }
 
     function activateBubble(activeIndex) {
@@ -141,7 +168,7 @@
           bub.classList.add('minimized');
           bub.classList.remove('active');
 
-          // move to opposite side of original
+          // Placera om små bubblor lite snett från original
           const origin = positions[index];
           const offsetX = origin.left ? '-15%' : (origin.right ? '15%' : '0');
           const offsetY = origin.top ? '20%' : '-20%';
@@ -155,6 +182,8 @@
           });
         }
       });
+
+      backButton.style.display = 'block';
     }
 
     bubbles.forEach((bub, index) => {
@@ -168,7 +197,9 @@
       });
     });
 
-    // Initial reset for correct positioning
+    backButton.addEventListener('click', resetBubbles);
+
+    // Init
     resetBubbles();
   </script>
 </body>
