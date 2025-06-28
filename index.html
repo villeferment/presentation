@@ -48,6 +48,7 @@
       display: none;
       font-size: 12px;
       margin-top: 10px;
+      white-space: pre-line; /* gör att radbrytningar visas */
     }
 
     .bubble.active {
@@ -70,7 +71,7 @@
       z-index: 4;
     }
 
-    /* Ursprunglig layout – ännu mer separerade */
+    /* Ursprunglig layout – närmare varandra nedtill */
     .bubble[data-index="0"] {
       top: 25%;
       left: 50%;
@@ -79,13 +80,13 @@
 
     .bubble[data-index="1"] {
       bottom: 20%;
-      left: 10%;
+      left: 25%;
       transform: translate(0, 0);
     }
 
     .bubble[data-index="2"] {
       bottom: 20%;
-      right: 10%;
+      right: 25%;
       transform: translate(0, 0);
     }
 
@@ -114,26 +115,26 @@
 
   <div class="container">
     <div class="bubble" data-index="0" data-title="Separate and intertwined relation as an entity"
-      data-description="Eye contact, timing, speed, direction in space, gracefulness">
+      data-description="Eye contact\nTiming\nSpeed\nDirection in space\nGracefulness">
       <div class="content">
         <h3>Separate and intertwined relation as an entity</h3>
-        <p>Eye contact, timing, speed, direction in space, gracefulness</p>
+        <p></p>
       </div>
     </div>
 
     <div class="bubble" data-index="1" data-title="Simultaneous experience of subject-object"
-      data-description="Listening with and through the body, openness to oneself and the collaborative work">
+      data-description="Attention with and through the body\nListening with and through the body\nOpenness to oneself\nCollaborative work">
       <div class="content">
         <h3>Simultaneous experience of subject-object</h3>
-        <p>Listening with and through the body, openness to oneself and the collaborative work</p>
+        <p></p>
       </div>
     </div>
 
-    <div class="bubble" data-index="2" data-title="Attention with and through the body – Bodily experience of movement"
-      data-description="Embodied experience from within, being in the movement, prior knowledge in relation to the phenomenon">
+    <div class="bubble" data-index="2" data-title="Bodily experience of movement"
+      data-description="Embodied experience from within\nBeing in the movement\nPrior knowledge in relation to the phenomenon">
       <div class="content">
-        <h3>Attention with and through the body – Bodily experience of movement</h3>
-        <p>Embodied experience from within, being in the movement, prior knowledge in relation to the phenomenon</p>
+        <h3>Bodily experience of movement</h3>
+        <p></p>
       </div>
     </div>
   </div>
@@ -143,9 +144,9 @@
     const backButton = document.getElementById('back-button');
 
     const positions = [
-      { top: '25%', left: '50%', bottom: '', right: '', transform: 'translate(-50%, 0)' }, // top
-      { top: '', left: '10%', bottom: '20%', right: '', transform: 'translate(0, 0)' },     // bottom left
-      { top: '', left: '', bottom: '20%', right: '10%', transform: 'translate(0, 0)' }      // bottom right
+      { top: '25%', left: '50%', bottom: '', right: '', transform: 'translate(-50%, 0)' },
+      { top: '', left: '25%', bottom: '20%', right: '', transform: 'translate(0, 0)' },
+      { top: '', left: '', bottom: '20%', right: '25%', transform: 'translate(0, 0)' }
     ];
 
     function resetBubbles() {
@@ -153,12 +154,13 @@
         bub.classList.remove('active', 'minimized');
         Object.assign(bub.style, positions[index]);
         bub.querySelector('h3').textContent = bub.dataset.title;
+        bub.querySelector('p').textContent = bub.dataset.description;
       });
       backButton.style.display = 'none';
     }
 
     function activateBubble(activeIndex) {
-      const moveOffset = 120;
+      const moveOffset = 100;
 
       bubbles.forEach((bub, index) => {
         if (index === activeIndex) {
@@ -177,15 +179,21 @@
           let newRight = original.right;
 
           if (activeIndex === 0) {
-            // Top bubble clicked — flytta ned övriga
+            // Klick på översta – flytta ned andra två
             if (original.top) newTop = `calc(${original.top} + ${moveOffset}px)`;
             if (original.bottom) newBottom = `calc(${original.bottom} - ${moveOffset}px)`;
           } else if (activeIndex === 2) {
-            // Bottom-right clicked — flytta övriga snett uppåt vänster
+            // Klick på nedre höger – flytta andra två snett uppåt vänster
             if (original.top) newTop = `calc(${original.top} - ${moveOffset}px)`;
             if (original.bottom) newBottom = `calc(${original.bottom} + ${moveOffset}px)`;
             if (original.left) newLeft = `calc(${original.left} - ${moveOffset}px)`;
             if (original.right) newRight = `calc(${original.right} + ${moveOffset}px)`;
+          } else if (activeIndex === 1) {
+            // Klick på nedre vänster – flytta andra två snett uppåt höger
+            if (original.top) newTop = `calc(${original.top} - ${moveOffset}px)`;
+            if (original.bottom) newBottom = `calc(${original.bottom} + ${moveOffset}px)`;
+            if (original.left) newLeft = `calc(${original.left} + ${moveOffset}px)`;
+            if (original.right) newRight = `calc(${original.right} - ${moveOffset}px)`;
           }
 
           Object.assign(bub.style, {
