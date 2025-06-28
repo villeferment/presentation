@@ -127,37 +127,88 @@
     const bubbles = document.querySelectorAll('.bubble');
     const resetBtn = document.getElementById('resetBtn');
 
-    // Mått och storlekar:
+    // Mått för bubblor (ellipsform)
     const sizes = {
       default: { width: 260, height: 160 },
       active: { width: 500, height: 300 },
       minimized: { width: 140, height: 90 }
     };
 
-    // --- UTGÅNGSLÄGE: pyramid, exakt kantkontakt ---
-    // Vi placerar bubblorna så att de bildar en pyramid med kantkontakt
+    // --- UTGÅNGSLÄGE: Pyramiden med exakt kantkontakt ---
 
-    // Koordinater (top, left) för varje bubbla i utgångsläget
-    // Placeras i container 1000x800
+    /*
+      Vi vill placera bubblorna såhär:
 
-    // Bubbla 0 (top): centrerad horisontellt ca 370px left
-    // Bubbla 1 (botten vänster): placerad så den nuddar bubbla 0 och bubbla 2 kant mot kant
-    // Bubbla 2 (botten höger)
+                 [0]
+               /      \
+            [1]        [2]
 
-    // Vi använder exakt kantkontakt så att bubblorna nuddar, utan mellanrum eller överlapp.
+      Alla nuddar varandra precis kant mot kant.
 
-    // Funktionshjälp: Position är top-left i px
+      Bubblorna är ellipser med radier:
+      - halvbredd = width/2
+      - halvhöjd = height/2
 
-    // Placering utgår från att bubblorna är ellipser ca 260x160 default, 140x90 små, 500x300 aktiva
+      Vi beräknar koordinaterna så att:
+      - bubbla 0 är centrerad horisontellt på toppen
+      - bubbla 1 och 2 ligger symmetriskt nedanför, så att bubblorna nuddar bubbla 0 och varandra kant i kant
+    */
 
-    // Startposition för bubbla 0 (top)
+    // Halvstorlekar default
+    const w = sizes.default.width;
+    const h = sizes.default.height;
+    const hw = w / 2;
+    const hh = h / 2;
+
+    // Placera bubbla 0 i toppen, horisontellt centrerad ca 350 px från vänster, topp ca 100 px
+    // Container är 1000px bred, så centrerat ca 370 px left så att bubbla ligger mellan 370 och 370+260
+    const topBubbleX = 370;
+    const topBubbleY = 100;
+
+    // Nu ska vi placera bubblorna 1 och 2 så att de nuddar bubbla 0 och varandra kant i kant.
+
+    // För att räkna ut dessa placeringar använder vi en geometrisk metod.
+
+    // Bubblorna är ellipser med:
+    // x-radie = 130, y-radie = 80
+
+    // Vi antar att bubblorna är placerade så att deras kanter "nuddat" längs en linje.
+
+    // Cirkelapproximation (för enklare beräkning), tar största radien för att få bra placering:
+    const radX = hw;  // 130 px
+    const radY = hh;  // 80 px
+
+    // Vertikalt avstånd mellan bubbla 0 och nedre bubblor = 0 eftersom de ska nudda kant mot kant, men eftersom bubblorna är elliptiska och inte cirklar behövs en liten justering.
+
+    // Vi kan approx placera bubblorna 1 och 2 så att de ligger ca:
+    // - vertikalt på topBubbleY + hh + hh * 0.9 (lite mindre än dubbla höjden för att få kantkontakt)
+    // - horisontellt symmetriskt från bubbla 0 med avstånd för att bubbla 1 och 2 nuddar varandra exakt kant mot kant
+
+    // Radie längs x för bubblorna 1 och 2 = 130 px
+    // För att bubbla 1 och 2 ska nudda varandra: horisontellt avstånd = 2 * 130 = 260 px
+
+    // Samtidigt ska bubbla 1 och 2 nudda bubbla 0, så deras centers är horisontellt flyttade från bubbla 0 med radier med hänsyn till bubbelform.
+
+    // Vi kan lösa detta ungefär såhär:
+
+    // Höjd på bubbla 1 och 2: topBubbleY + hh + hh * 0.85 (justerat)
+
+    // Horisontella positioner för bubbla 1 och 2:
+
+    // - bubbla 1: left = topBubbleX - 130 - 15 (justerat)
+    // - bubbla 2: left = topBubbleX + 130 - 15
+
+    // Den -15 px justeringen är för att bubblornas elliptiska form ger en liten förskjutning för att kanten ska nudda.
+
+    // Sätt positioner:
+
     const posDefault = [
-      { top: 100, left: 370 }, // bubbla 0 - top-center
-      { top: 100 + sizes.default.height - 5, left: 370 - sizes.default.width / 2 + 10 }, // bubbla 1 - botten vänster
-      { top: 100 + sizes.default.height - 5, left: 370 + sizes.default.width / 2 - sizes.default.width + 10 } // bubbla 2 - botten höger
+      { top: topBubbleY, left: topBubbleX },               // bubbla 0 topp
+      { top: topBubbleY + hh + hh * 0.85, left: topBubbleX - radX - 15 }, // bubbla 1 botten vänster
+      { top: topBubbleY + hh + hh * 0.85, left: topBubbleX + radX - 15 }  // bubbla 2 botten höger
     ];
 
-    // Sätt bubblor i defaultläge på sin plats med kantkontakt
+    // Funktion för att sätta utgångspositioner
     function setDefaultPositions() {
       bubbles.forEach((bubble, i) => {
         bubble.classList.remove('active', 'minimized');
@@ -175,15 +226,11 @@
 
     // --- EXPANDERAT LÄGE ---
 
-    // När en bubbla expanderas:
-    // 1. Den stora bubblan centreras (i container)
-    // 2. De två små bubblorna placeras så att de nuddar den stora bubblan kant mot kant
-    //    och behåller sin relativa position (t.ex. två små bubblor sitter diagonalt nedanför/bredvid)
+    // Expanderad bubbla centreras, små bubblor placeras kant mot kant med korrekt vektor
 
     function setActivePositions(activeIndex) {
       bubbles.forEach((bubble, i) => {
         if (i === activeIndex) {
-          // Expanderad bubbla - centrera i container
           bubble.classList.add('active');
           bubble.classList.remove('default', 'minimized');
           bubble.style.width = sizes.active.width + 'px';
@@ -193,11 +240,10 @@
           bubble.style.zIndex = 10;
           bubble.querySelector('p').style.display = 'block';
           bubble.querySelector('p').innerHTML = bubble.dataset.description;
-          // Centrera aktiv bubbla horisontellt och vertikalt
+          // Centrera aktiv bubbla horisontellt och vertikalt i container
           bubble.style.left = (1000 - sizes.active.width) / 2 + 'px';
           bubble.style.top = (800 - sizes.active.height) / 2 + 'px';
         } else {
-          // Minimerade bubblor placeras så att de nuddar den stora bubblan kant mot kant
           bubble.classList.add('minimized');
           bubble.classList.remove('default', 'active');
           bubble.style.width = sizes.minimized.width + 'px';
@@ -207,48 +253,46 @@
           bubble.style.zIndex = 5;
           bubble.querySelector('p').style.display = 'none';
 
-          // Placering: beräkna vektor från aktiv bubbla i defaultläge till denna bubbla i defaultläge
-          // Behåll vektorens riktning men sätt avstånd till kanten av den stora bubblan + kanten på liten bubbla
+          // Beräkna positioner så att små bubblor nuddar den stora kant mot kant, med korrekt riktning
 
+          // Vektor från aktiv bubbla i defaultläge till denna bubbla i defaultläge
           const activePos = posDefault[activeIndex];
           const otherPos = posDefault[i];
 
-          // Vektor från aktiv bubbla till aktuell bubbla i defaultläge
           const vecX = otherPos.left - activePos.left;
           const vecY = otherPos.top - activePos.top;
 
-          // Beräkna unit vector
           const dist = Math.sqrt(vecX * vecX + vecY * vecY);
           const ux = vecX / dist;
           const uy = vecY / dist;
 
-          // Halvbredd & halvhöjd på bubbla (ellips approx)
+          // Halvstorlekar
           const activeHalfWidth = sizes.active.width / 2;
           const activeHalfHeight = sizes.active.height / 2;
           const miniHalfWidth = sizes.minimized.width / 2;
           const miniHalfHeight = sizes.minimized.height / 2;
 
-          // Avstånd kant till kant längs riktningen - med bubbelform i åtanke
-          // Tar hänsyn till ellipsformen för bättre passning
+          // Avstånd kant till kant längs vektor (ellipsapprox)
           const activeRadius = Math.abs(ux) * activeHalfWidth + Math.abs(uy) * activeHalfHeight;
           const miniRadius = Math.abs(ux) * miniHalfWidth + Math.abs(uy) * miniHalfHeight;
 
-          // Aktiv bubbla centrerad i container:
+          // Aktiv bubbla centrerad i container (center coords)
           const centerX = (1000 - sizes.active.width) / 2 + activeHalfWidth;
           const centerY = (800 - sizes.active.height) / 2 + activeHalfHeight;
 
-          // Position för minimerad bubbla - kant mot kant
+          // Placera bubbla kant mot kant från aktiv bubbla längs riktningen
           const miniCenterX = centerX + ux * (activeRadius + miniRadius);
           const miniCenterY = centerY + uy * (activeRadius + miniRadius);
 
-          // Omvandla centerkoordinat till top-left
+          // Omvandla center till top-left
           bubble.style.left = (miniCenterX - miniHalfWidth) + 'px';
           bubble.style.top = (miniCenterY - miniHalfHeight) + 'px';
         }
       });
     }
 
-    // --- HANTERA KLICK ---
+    // Event listeners
+
     bubbles.forEach(bubble => {
       bubble.addEventListener('click', () => {
         const index = parseInt(bubble.dataset.index);
@@ -260,7 +304,7 @@
       setDefaultPositions();
     });
 
-    // Initiera sidan med utgångsläget
+    // Init
     setDefaultPositions();
 
   </script>
