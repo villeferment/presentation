@@ -96,18 +96,15 @@
 <body>
   <div class="bubble-container">
     <button class="back-btn" onclick="resetBubbles()">Tillbaka</button>
-    <div class="bubble" id="bubble1" data-theme="Intertwined as an entity">Intertwined as an entity</div>
-    <div class="bubble" id="bubble2" data-theme="Separate focus in relation to the entity">Separate focus in relation to the entity</div>
-    <div class="bubble" id="bubble3" data-theme="Simultaneous experience of subject-object">Simultaneous experience of subject-object</div>
-    <div class="bubble" id="bubble4" data-theme="Bodily experience of movement">Bodily experience of movement</div>
+    <div class="bubble" id="bubble1" data-theme="Separate and intertwined relation as an entity">Separate and intertwined relation as an entity</div>
+    <div class="bubble" id="bubble2" data-theme="Simultaneous experience of subject-object">Simultaneous experience of subject-object</div>
+    <div class="bubble" id="bubble3" data-theme="Bodily experience of movement">Bodily experience of movement</div>
   </div>
 
   <script>
     const themes = {
-      "Intertwined as an entity": [
-        "Eye contact", "Timing", "Speed", "Direction in space", "Gracefulness"
-      ],
-      "Separate focus in relation to the entity": [
+      "Separate and intertwined relation as an entity": [
+        "Eye contact", "Timing", "Speed", "Direction in space", "Gracefulness",
         "Multiple perspectives", "Focused distance", "Intentional observation"
       ],
       "Simultaneous experience of subject-object": [
@@ -123,34 +120,15 @@
     };
 
     const positions = [
-      { top: "40%", left: "45%" },
-      { top: "42%", left: "47%" },
-      { top: "44%", left: "49%" },
-      { top: "46%", left: "51%" }
+      { top: "43%", left: "43%" },
+      { top: "41%", left: "45%" },
+      { top: "45%", left: "47%" }
     ];
 
-    const miniPositionSets = {
-      0: [
-        { top: '25%', left: '70%' },
-        { top: '35%', left: '75%' },
-        { top: '45%', left: '70%' }
-      ],
-      1: [
-        { top: '65%', left: '70%' },
-        { top: '75%', left: '75%' },
-        { top: '85%', left: '70%' }
-      ],
-      2: [
-        { top: '65%', left: '10%' },
-        { top: '75%', left: '15%' },
-        { top: '85%', left: '10%' }
-      ],
-      3: [
-        { top: '25%', left: '10%' },
-        { top: '35%', left: '15%' },
-        { top: '45%', left: '10%' }
-      ]
-    };
+    const miniBubbleOffsets = [
+      { top: '10%', left: '65%' },
+      { top: '65%', left: '15%' }
+    ];
 
     const bubbles = [...document.querySelectorAll('.bubble')];
     const container = document.querySelector('.bubble-container');
@@ -176,14 +154,12 @@
       miniGroup.id = 'miniGroup';
       container.appendChild(miniGroup);
 
-      const miniPositions = miniPositionSets[activeIndex];
-
       others.forEach((b, i) => {
         const mini = document.createElement('div');
         mini.className = 'mini-bubble';
         mini.innerText = b.dataset.theme;
-        mini.style.top = miniPositions[i].top;
-        mini.style.left = miniPositions[i].left;
+        mini.style.top = miniBubbleOffsets[i].top;
+        mini.style.left = miniBubbleOffsets[i].left;
         mini.onclick = () => {
           resetBubbles();
           setTimeout(() => handleClick(b), 500);
