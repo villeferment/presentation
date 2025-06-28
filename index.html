@@ -36,7 +36,7 @@
       padding: 20px;
       cursor: pointer;
       transition: all 0.6s ease;
-      z-index: 3; /* Alla bubblor syns över aktiva */
+      z-index: 3;
     }
 
     .bubble h3 {
@@ -56,7 +56,7 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      z-index: 1; /* Läggs bakom de små */
+      z-index: 1;
     }
 
     .bubble.active p {
@@ -67,25 +67,25 @@
       width: 120px;
       height: 80px;
       font-size: 10px;
-      z-index: 4; /* små bubblor ligger över den stora */
+      z-index: 4;
     }
 
-    /* Pyramidlayout */
+    /* Justerad pyramidlayout – alla bubblor nuddar varandra */
     .bubble[data-index="0"] {
-      top: 10%;
+      top: 30%;
       left: 50%;
       transform: translate(-50%, 0);
     }
 
     .bubble[data-index="1"] {
-      bottom: 10%;
-      left: 20%;
+      bottom: 20%;
+      left: 30%;
       transform: translate(0, 0);
     }
 
     .bubble[data-index="2"] {
-      bottom: 10%;
-      right: 20%;
+      bottom: 20%;
+      right: 30%;
       transform: translate(0, 0);
     }
 
@@ -143,9 +143,9 @@
     const backButton = document.getElementById('back-button');
 
     const positions = [
-      { top: '10%', left: '50%', right: '', bottom: '', transform: 'translate(-50%, 0)' },
-      { top: '', left: '20%', right: '', bottom: '10%', transform: 'translate(0, 0)' },
-      { top: '', left: '', right: '20%', bottom: '10%', transform: 'translate(0, 0)' }
+      { top: '30%', left: '50%', right: '', bottom: '', transform: 'translate(-50%, 0)' },
+      { top: '', left: '30%', right: '', bottom: '20%', transform: 'translate(0, 0)' },
+      { top: '', left: '', right: '30%', bottom: '20%', transform: 'translate(0, 0)' }
     ];
 
     function resetBubbles() {
@@ -168,10 +168,8 @@
           bub.classList.add('minimized');
           bub.classList.remove('active');
 
-          // Placera om små bubblor lite snett från original
           const origin = positions[index];
           const offsetX = origin.left ? '-15%' : (origin.right ? '15%' : '0');
-          const offsetY = origin.top ? '20%' : '-20%';
 
           Object.assign(bub.style, {
             top: origin.top || '',
