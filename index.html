@@ -2,7 +2,7 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8" />
-  <title>Bubbla Pyramid med små justeringar</title>
+  <title>Bubbla Pyramid med större justeringar</title>
   <style>
     body {
       margin: 0;
@@ -212,8 +212,8 @@
             const bigTop = (containerHeight - hActive) / 2;
 
             if (i === 0) {
-              // Övre bubbla flyttas pyttelite höger (ca 10 px)
-              bubble.style.left = (bigLeft - miniHalfW + 10) + 'px';
+              // Övre bubbla flyttas pyttelite höger (ca 15 px)
+              bubble.style.left = (bigLeft - miniHalfW + 15) + 'px';
               bubble.style.top = (bigTop - miniHalfH) + 'px';
             }
             if (i === 1) {
@@ -228,9 +228,9 @@
             const bigRight = bigLeft + wActive;
 
             if (i === 2) {
-              // Högra nedre bubbla flyttas ner lite (ca 15 px)
+              // Högra nedre bubbla flyttas ner lite (ca 25 px)
               bubble.style.left = (bigRight - miniHalfW) + 'px';
-              bubble.style.top = (bigTop - miniHalfH + 15) + 'px';
+              bubble.style.top = (bigTop - miniHalfH + 25) + 'px';
             }
             if (i === 0) {
               bubble.style.left = (bigRight - miniHalfW * 1.8) + 'px';
