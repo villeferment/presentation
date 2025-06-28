@@ -54,14 +54,15 @@
       line-height: 1.3;
     }
 
+    /* Standard storlek (utgångsläge) */
     .bubble.default {
       width: 260px;
       height: 160px;
       font-size: 14px;
-      padding: 20px;
       z-index: 1;
     }
 
+    /* Expanderad bubbla */
     .bubble.active {
       width: 500px;
       height: 300px;
@@ -70,6 +71,7 @@
       z-index: 10;
     }
 
+    /* Minimerade bubblor vid expanderad */
     .bubble.minimized {
       width: 140px;
       height: 90px;
@@ -131,17 +133,21 @@
       minimized: { width: 140, height: 90 }
     };
 
-    // Default-positioner i pyramiden med exakt kantkontakt
-    const hw = sizes.default.width / 2;
-    const hh = sizes.default.height / 2;
+    const w = sizes.default.width;
+    const h = sizes.default.height;
+    const hw = w / 2;
+    const hh = h / 2;
 
     const topBubbleX = 370;
     const topBubbleY = 100;
 
+    const radX = hw;
+    const radY = hh;
+
     const posDefault = [
-      { top: topBubbleY, left: topBubbleX }, // bubbla 0
-      { top: topBubbleY + hh + hh * 0.85, left: topBubbleX - hw - 15 }, // bubbla 1
-      { top: topBubbleY + hh + hh * 0.85, left: topBubbleX + hw - 15 }  // bubbla 2
+      { top: topBubbleY, left: topBubbleX },
+      { top: topBubbleY + hh + hh * 0.85, left: topBubbleX - radX - 15 },
+      { top: topBubbleY + hh + hh * 0.85, left: topBubbleX + radX - 15 }
     ];
 
     function setDefaultPositions() {
@@ -160,73 +166,79 @@
     }
 
     function setActivePositions(activeIndex) {
-      const containerWidth = 1000;
-      const containerHeight = 800;
-
-      const activeWidth = sizes.active.width;
-      const activeHeight = sizes.active.height;
-      const miniWidth = sizes.minimized.width;
-      const miniHeight = sizes.minimized.height;
-
-      const centerX = (containerWidth - activeWidth) / 2 + activeWidth / 2;
-      const centerY = (containerHeight - activeHeight) / 2 + activeHeight / 2;
-
       bubbles.forEach((bubble, i) => {
         if (i === activeIndex) {
           bubble.classList.add('active');
           bubble.classList.remove('default', 'minimized');
-          bubble.style.width = activeWidth + 'px';
-          bubble.style.height = activeHeight + 'px';
+          bubble.style.width = sizes.active.width + 'px';
+          bubble.style.height = sizes.active.height + 'px';
           bubble.style.fontSize = '18px';
           bubble.style.padding = '30px';
           bubble.style.zIndex = 10;
           bubble.querySelector('p').style.display = 'block';
           bubble.querySelector('p').innerHTML = bubble.dataset.description;
-          // Centrera aktiv bubbla
-          bubble.style.left = (containerWidth - activeWidth) / 2 + 'px';
-          bubble.style.top = (containerHeight - activeHeight) / 2 + 'px';
+          bubble.style.left = (1000 - sizes.active.width) / 2 + 'px';
+          bubble.style.top = (800 - sizes.active.height) / 2 + 'px';
         } else {
           bubble.classList.add('minimized');
           bubble.classList.remove('default', 'active');
-          bubble.style.width = miniWidth + 'px';
-          bubble.style.height = miniHeight + 'px';
+          bubble.style.width = sizes.minimized.width + 'px';
+          bubble.style.height = sizes.minimized.height + 'px';
           bubble.style.fontSize = '11px';
           bubble.style.padding = '12px 10px';
           bubble.style.zIndex = 5;
           bubble.querySelector('p').style.display = 'none';
 
-          // Placera små bubblor kant mot kant relativt aktiv bubbla
-          const activePos = posDefault[activeIndex];
-          const otherPos = posDefault[i];
+          const centerX = (1000 - sizes.active.width) / 2 + sizes.active.width / 2;
+          const centerY = (800 - sizes.active.height) / 2 + sizes.active.height / 2;
+          const miniHalfWidth = sizes.minimized.width / 2;
+          const miniHalfHeight = sizes.minimized.height / 2;
 
-          const vecX = otherPos.left - activePos.left;
-          const vecY = otherPos.top - activePos.top;
+          if (activeIndex === 0) {
+            // Uppdaterad placering för små bubblor när bubbla 0 är aktiv
+            const offsetY = sizes.active.height / 2 + miniHalfHeight + 20;
+            const offsetX = 50;
 
-          const dist = Math.sqrt(vecX * vecX + vecY * vecY);
-          const ux = vecX / dist;
-          const uy = vecY / dist;
+            if (i === 1) {
+              bubble.style.left = (centerX - offsetX - miniHalfWidth) + 'px';
+              bubble.style.top = (centerY - offsetY - miniHalfHeight) + 'px';
+            }
+            if (i === 2) {
+              bubble.style.left = (centerX + offsetX - miniHalfWidth) + 'px';
+              bubble.style.top = (centerY - offsetY - miniHalfHeight) + 'px';
+            }
+          } else if (activeIndex === 1) {
+            const offsetX = sizes.active.width / 2 + miniHalfWidth - 5;
+            const offsetY = sizes.active.height / 2 + miniHalfHeight - 5;
 
-          const activeHalfW = activeWidth / 2;
-          const activeHalfH = activeHeight / 2;
-          const miniHalfW = miniWidth / 2;
-          const miniHalfH = miniHeight / 2;
+            if (i === 0) {
+              bubble.style.left = (centerX + offsetX - miniHalfWidth) + 'px';
+              bubble.style.top = (centerY - offsetY - miniHalfHeight - 20) + 'px';
+            }
+            if (i === 2) {
+              bubble.style.left = (centerX + offsetX + 80 - miniHalfWidth) + 'px';
+              bubble.style.top = (centerY - offsetY - miniHalfHeight) + 'px';
+            }
+          } else if (activeIndex === 2) {
+            const offsetX = sizes.active.width / 2 + miniHalfWidth - 5;
+            const offsetY = sizes.active.height / 2 + miniHalfHeight - 5;
 
-          // Avstånd kant till kant längs vektorn (ellipsapproximation)
-          const activeRadius = Math.abs(ux) * activeHalfW + Math.abs(uy) * activeHalfH;
-          const miniRadius = Math.abs(ux) * miniHalfW + Math.abs(uy) * miniHalfH;
-
-          const miniCenterX = centerX + ux * (activeRadius + miniRadius);
-          const miniCenterY = centerY + uy * (activeRadius + miniRadius);
-
-          bubble.style.left = (miniCenterX - miniHalfW) + 'px';
-          bubble.style.top = (miniCenterY - miniHalfH) + 'px';
+            if (i === 0) {
+              bubble.style.left = (centerX - offsetX - miniHalfWidth - 80) + 'px';
+              bubble.style.top = (centerY - offsetY - miniHalfHeight - 20) + 'px';
+            }
+            if (i === 1) {
+              bubble.style.left = (centerX - offsetX - miniHalfWidth) + 'px';
+              bubble.style.top = (centerY - offsetY - miniHalfHeight) + 'px';
+            }
+          }
         }
       });
     }
 
     bubbles.forEach(bubble => {
       bubble.addEventListener('click', () => {
-        const index = parseInt(bubble.dataset.index);
+        const index = Number(bubble.dataset.index);
         setActivePositions(index);
       });
     });
@@ -235,6 +247,7 @@
       setDefaultPositions();
     });
 
+    // Startläge
     setDefaultPositions();
   </script>
 </body>
