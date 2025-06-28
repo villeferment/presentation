@@ -55,19 +55,19 @@
 
     .mini-bubble {
       position: absolute;
-      width: 130px;
-      height: 90px;
+      width: 160px;
+      height: 100px;
       border-radius: 50% / 35%;
       background-color: rgba(255, 255, 255, 1);
       color: #000;
-      font-size: 0.6rem;
+      font-size: 0.7rem;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
       cursor: pointer;
       transition: all 0.5s ease;
-      z-index: 6;
+      z-index: 10;
     }
 
     .bubble ul {
@@ -88,7 +88,7 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      z-index: 10;
+      z-index: 20;
     }
   </style>
 </head>
@@ -122,32 +122,32 @@
     };
 
     const positions = [
-      { top: "30%", left: "25%" },
+      { top: "30%", left: "30%" },
       { top: "30%", left: "55%" },
-      { top: "50%", left: "25%" },
-      { top: "50%", left: "55%" }
+      { top: "55%", left: "30%" },
+      { top: "55%", left: "55%" }
     ];
 
     const miniPositionSets = {
-      0: [ // When bubble1 is active
-        { top: '60%', left: '60%' },
-        { top: '70%', left: '65%' },
-        { top: '65%', left: '75%' }
+      0: [
+        { top: '70%', left: '70%' },
+        { top: '80%', left: '75%' },
+        { top: '75%', left: '85%' }
       ],
-      1: [ // When bubble2 is active
-        { top: '60%', left: '20%' },
-        { top: '70%', left: '25%' },
-        { top: '65%', left: '35%' }
+      1: [
+        { top: '70%', left: '10%' },
+        { top: '80%', left: '15%' },
+        { top: '75%', left: '25%' }
       ],
-      2: [ // When bubble3 is active
-        { top: '20%', left: '60%' },
-        { top: '25%', left: '70%' },
-        { top: '30%', left: '65%' }
+      2: [
+        { top: '10%', left: '70%' },
+        { top: '15%', left: '80%' },
+        { top: '20%', left: '75%' }
       ],
-      3: [ // When bubble4 is active
-        { top: '20%', left: '20%' },
-        { top: '25%', left: '30%' },
-        { top: '30%', left: '25%' }
+      3: [
+        { top: '10%', left: '10%' },
+        { top: '15%', left: '20%' },
+        { top: '20%', left: '15%' }
       ]
     };
 
