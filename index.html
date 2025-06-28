@@ -70,7 +70,7 @@
       z-index: 4;
     }
 
-    /* Justerad pyramidlayout – alla bubblor nuddar varandra */
+    /* Pyramidlayout med större avstånd mellan nedre bubblor */
     .bubble[data-index="0"] {
       top: 30%;
       left: 50%;
@@ -79,13 +79,13 @@
 
     .bubble[data-index="1"] {
       bottom: 20%;
-      left: 10%;
+      left: 20%;
       transform: translate(0, 0);
     }
 
     .bubble[data-index="2"] {
       bottom: 20%;
-      right: 10%;
+      right: 20%;
       transform: translate(0, 0);
     }
 
@@ -144,8 +144,8 @@
 
     const positions = [
       { top: '30%', left: '50%', right: '', bottom: '', transform: 'translate(-50%, 0)' },
-      { top: '', left: '30%', right: '', bottom: '20%', transform: 'translate(0, 0)' },
-      { top: '', left: '', right: '30%', bottom: '20%', transform: 'translate(0, 0)' }
+      { top: '', left: '20%', right: '', bottom: '20%', transform: 'translate(0, 0)' },
+      { top: '', left: '', right: '20%', bottom: '20%', transform: 'translate(0, 0)' }
     ];
 
     function resetBubbles() {
