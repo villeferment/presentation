@@ -76,29 +76,31 @@
       z-index: 20;
     }
 
+    /* Uppdaterad stil för tillbaka-knappen */
     #resetBtn {
       position: absolute;
       top: 15px;
-      right: 15px;
-      background: #333;
+      left: 15px;
+      background: #000;
       color: white;
       border: none;
-      padding: 12px 20px;
-      font-size: 14px;
+      padding: 10px 14px;
+      font-size: 20px;
+      font-weight: bold;
       cursor: pointer;
-      border-radius: 6px;
+      border-radius: 50%;
       user-select: none;
       z-index: 30;
       transition: background-color 0.3s ease;
     }
     #resetBtn:hover {
-      background: #555;
+      background: #444;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <button id="resetBtn">Tillbaka</button>
+    <button id="resetBtn" aria-label="Tillbaka">←</button>
 
     <div class="bubble default" data-index="0" data-title="Bodily experience of movement"
       data-description="Embodied experience from within<br>Being in the movement<br>Prior knowledge in relation to the phenomenon">
