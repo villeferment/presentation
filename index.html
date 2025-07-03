@@ -1,293 +1,71 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="UTF-8" />
-  <title>Bubbla Pyramid med förstora underrubriker</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f7f7f7;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      overflow: hidden;
-    }
-    .container {
-      position: relative;
-      width: 1000px;
-      height: 800px;
-    }
-    .bubble {
-      position: absolute;
-      background: white;
-      border-radius: 50% / 40%;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-      cursor: pointer;
-      box-sizing: border-box;
-      padding: 20px;
-      text-align: center;
-      transition: all 0.5s ease;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      user-select: none;
-    }
-    .bubble h3 {
-      margin: 0;
-      font-size: 16px;
-      line-height: 1.2;
-      user-select: text;
-      cursor: default; /* INTE klickbar */
-    }
-    .bubble p {
-      margin-top: 10px;
-      font-size: 13px;
-      white-space: normal;
-      display: none;
-      line-height: 1.3;
-      user-select: text;
-      padding: 0;
-      width: 100%;
-    }
-    .bubble p .subline {
-      cursor: pointer;
-      transition: transform 0.3s ease, font-weight 0.3s ease;
-      margin-bottom: 6px;
-      user-select: text;
-      text-align: left;
-    }
-    .bubble p .subline.expanded {
-      transform: scale(1.3);
-      font-weight: bold;
-      color: #222;
-      background: #eef;
-      border-radius: 4px;
-      padding: 2px 6px;
-    }
-    .bubble.default {
-      width: 300px;
-      height: 180px;
-      font-size: 14px;
-      z-index: 1;
-    }
-    .bubble.active {
-      width: 500px;
-      height: 300px;
-      font-size: 18px;
-      padding: 30px;
-      z-index: 10;
-    }
-    .bubble.minimized {
-      width: 140px;
-      height: 90px;
-      font-size: 11px;
-      padding: 12px 10px;
-      z-index: 20;
-    }
-    #resetBtn {
-      position: absolute;
-      top: 15px;
-      left: 15px;
-      background: #000;
-      color: white;
-      border: none;
-      padding: 10px 14px;
-      font-size: 20px;
-      font-weight: bold;
-      cursor: pointer;
-      border-radius: 50%;
-      user-select: none;
-      z-index: 30;
-      transition: background-color 0.3s ease;
-    }
-    #resetBtn:hover {
-      background: #444;
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>Testa klickbara underrubriker</title>
+<style>
+  .bubble {
+    width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    padding: 20px;
+    margin: 20px auto;
+    user-select: none;
+    cursor: pointer;
+  }
+  h3 {
+    margin: 0 0 10px 0;
+    cursor: default; /* inte klickbar */
+  }
+  p {
+    margin: 0;
+  }
+  .subline {
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .subline.expanded {
+    font-weight: bold;
+    font-size: 1.3em;
+    color: #222;
+    background: #eef;
+    border-radius: 5px;
+    padding: 2px 5px;
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <button id="resetBtn" aria-label="Tillbaka">←</button>
 
-    <div class="bubble default" data-index="0" data-title="Bodily experience of movement"
-      data-description="Embodied experience from within\nBeing in the movement\nPrior knowledge in relation to the phenomenon">
-      <h3>Bodily experience of movement</h3>
-      <p></p>
-    </div>
+<div class="bubble" id="bubble1" data-description="Första underrubriken\nAndra underrubriken\nTredje underrubriken">
+  <h3>Huvudrubrik</h3>
+  <p></p>
+</div>
 
-    <div class="bubble default" data-index="1" data-title="Simultaneous experience of subject-object"
-      data-description="Listening with and through the body\nOpenness to oneself and the collaborative work\nAttention with and through the body">
-      <h3>Simultaneous experience of subject-object</h3>
-      <p></p>
-    </div>
+<script>
+  const bubble = document.getElementById('bubble1');
+  const p = bubble.querySelector('p');
 
-    <div class="bubble default" data-index="2" data-title="Separate and intertwined relation as an entity"
-      data-description="Eye contact\nTiming\nSpeed\nDirection in space\nGracefulness">
-      <h3>Separate and intertwined relation as an entity</h3>
-      <p></p>
-    </div>
-  </div>
-
-  <script>
-    const bubbles = document.querySelectorAll('.bubble');
-    const resetBtn = document.getElementById('resetBtn');
-
-    const sizes = {
-      default: { width: 300, height: 180 },
-      active: { width: 500, height: 300 },
-      minimized: { width: 140, height: 90 }
-    };
-
-    const wDefault = sizes.default.width;
-    const hDefault = sizes.default.height;
-    const wActive = sizes.active.width;
-    const hActive = sizes.active.height;
-    const wMini = sizes.minimized.width;
-    const hMini = sizes.minimized.height;
-
-    function setDefaultPositions() {
-      const containerWidth = 1000;
-      const containerHeight = 800;
-      const centerX = containerWidth / 2;
-      const topOffset = 180;
-
-      const posDefault = [
-        { top: topOffset, left: centerX - wDefault / 2 },
-        { top: topOffset + hDefault * 0.9, left: centerX - wDefault + 10 },
-        { top: topOffset + hDefault * 0.9, left: centerX - 10 }
-      ];
-
-      bubbles.forEach((bubble, i) => {
-        bubble.classList.remove('active', 'minimized');
-        bubble.classList.add('default');
-        bubble.style.width = wDefault + 'px';
-        bubble.style.height = hDefault + 'px';
-        bubble.style.fontSize = '14px';
-        bubble.style.padding = '20px';
-        bubble.style.zIndex = 1;
-        bubble.style.left = posDefault[i].left + 'px';
-        bubble.style.top = posDefault[i].top + 'px';
-
-        const p = bubble.querySelector('p');
-        p.style.display = 'none';
-        p.innerHTML = '';
+  // Funktion som sätter underrubriker i p, varje rad i egen div.subline
+  function renderSubtitles(text) {
+    const lines = text.split('\n');
+    p.innerHTML = '';
+    lines.forEach(line => {
+      const div = document.createElement('div');
+      div.textContent = line.trim();
+      div.classList.add('subline');
+      // Klick-event för att toggla 'expanded'
+      div.addEventListener('click', (e) => {
+        e.stopPropagation();  // Viktigt! Så att klick på underrubrik inte triggar bubbla-click
+        div.classList.toggle('expanded');
       });
-    }
-
-    function createClickableLines(text) {
-      return text
-        .split('\n')
-        .map(line => `<div class="subline">${line.trim()}</div>`)
-        .join('');
-    }
-
-    function setActivePositions(activeIndex) {
-      const containerWidth = 1000;
-      const containerHeight = 800;
-
-      bubbles.forEach((bubble, i) => {
-        const p = bubble.querySelector('p');
-
-        if (i === activeIndex) {
-          bubble.classList.add('active');
-          bubble.classList.remove('default', 'minimized');
-          bubble.style.width = wActive + 'px';
-          bubble.style.height = hActive + 'px';
-          bubble.style.fontSize = '18px';
-          bubble.style.padding = '30px';
-          bubble.style.zIndex = 10;
-          bubble.style.left = (containerWidth - wActive) / 2 + 'px';
-          bubble.style.top = (containerHeight - hActive) / 2 + 'px';
-
-          // Visa och skapa klickbara underrubriker på nya rader
-          p.style.display = 'block';
-          p.innerHTML = createClickableLines(bubble.dataset.description);
-
-          // Lägg till eventlisteners på varje subline
-          p.querySelectorAll('.subline').forEach(div => {
-            div.addEventListener('click', () => {
-              div.classList.toggle('expanded');
-            });
-          });
-
-        } else {
-          bubble.classList.add('minimized');
-          bubble.classList.remove('default', 'active');
-          bubble.style.width = wMini + 'px';
-          bubble.style.height = hMini + 'px';
-          bubble.style.fontSize = '11px';
-          bubble.style.padding = '12px 10px';
-          bubble.style.zIndex = 20;
-          p.style.display = 'none';
-          p.innerHTML = '';
-
-          // Positionering av minimerade bubblor
-          const centerX = (containerWidth - wActive) / 2 + wActive / 2;
-          const centerY = (containerHeight - hActive) / 2 + hActive / 2;
-          const miniHalfW = wMini / 2;
-          const miniHalfH = hMini / 2;
-
-          if (activeIndex === 0) {
-            const bigTop = (containerHeight - hActive) / 2;
-            const miniTop = bigTop + hActive - miniHalfH;
-            const offsetX = 70;
-
-            if (i === 1) {
-              bubble.style.left = (centerX - offsetX - miniHalfW) + 'px';
-              bubble.style.top = miniTop + 'px';
-            }
-            if (i === 2) {
-              bubble.style.left = (centerX + offsetX - miniHalfW) + 'px';
-              bubble.style.top = miniTop + 'px';
-            }
-
-          } else if (activeIndex === 2) {
-            const bigLeft = (containerWidth - wActive) / 2;
-            const bigTop = (containerHeight - hActive) / 2;
-
-            if (i === 0) {
-              bubble.style.left = (bigLeft - miniHalfW + 30) + 'px';
-              bubble.style.top = (bigTop - miniHalfH + 10) + 'px';
-            }
-            if (i === 1) {
-              bubble.style.left = (bigLeft - miniHalfW * 1.8) + 'px';
-              bubble.style.top = (bigTop + miniHalfH / 1.3) + 'px';
-            }
-
-          } else if (activeIndex === 1) {
-            const bigLeft = (containerWidth - wActive) / 2;
-            const bigTop = (containerHeight - hActive) / 2;
-            const bigRight = bigLeft + wActive;
-
-            if (i === 2) {
-              bubble.style.left = (bigRight - miniHalfW) + 'px';
-              bubble.style.top = (bigTop - miniHalfH + 75) + 'px';
-            }
-            if (i === 0) {
-              bubble.style.left = (bigRight - miniHalfW * 1.8) + 'px';
-              bubble.style.top = (bigTop - miniHalfH) + 'px';
-            }
-          }
-        }
-      });
-    }
-
-    bubbles.forEach(bubble => {
-      bubble.addEventListener('click', () => {
-        const index = parseInt(bubble.dataset.index);
-        setActivePositions(index);
-      });
+      p.appendChild(div);
     });
+  }
 
-    resetBtn.addEventListener('click', () => {
-      setDefaultPositions();
-    });
+  // Sätt underrubrikerna på load
+  renderSubtitles(bubble.dataset.description);
+</script>
 
-    setDefaultPositions();
-  </script>
 </body>
 </html>
