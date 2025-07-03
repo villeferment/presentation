@@ -40,55 +40,46 @@
     }
 
     .bubble h3 {
-      margin: 0;
+      margin: 0 0 10px 0;
       font-size: 16px;
       line-height: 1.2;
-      user-select: none; /* huvudrubrik ska ej kunna markeras/klickas */
-    }
-
-    /* Underrubriker, visas bara i aktiv bubbla */
-    .bubble .subtitles-container {
-      display: none;
-    }
-    .bubble.active .subtitles-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;  /* Centrerar underrubriker horisontellt */
-      text-align: center;
-      max-height: 160px;
-      overflow-y: auto;
-      margin-top: 10px;
-      user-select: text;
-      width: 100%;
-    }
-
-    .subline {
-      margin: 5px 0;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: 14px;
-      color: #555;
-      padding: 2px 6px;
-      border-radius: 5px;
-      width: fit-content;
-      min-width: 50px;
-      user-select: text;
-    }
-    .subline.enlarged {
-      font-size: 20px;
-      font-weight: bold;
-      color: #000;
-      background-color: #eef0f5;
-      padding: 4px 10px;
-      border-radius: 8px;
+      user-select: none;
     }
 
     .bubble p {
-      margin-top: 10px;
+      margin: 0;
       font-size: 13px;
       white-space: pre-line;
       display: none;
       line-height: 1.3;
+      user-select: none;
+    }
+
+    /* Container för underrubriker */
+    .subtitles-container {
+      display: none;
+      flex-direction: column;
+      align-items: center; /* Centrera texten horisontellt */
+      margin-top: 5px;
+      user-select: none;
+    }
+
+    /* Varje underrubrik på egen rad */
+    .subline {
+      font-size: 13px;
+      margin: 4px 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      user-select: text;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    /* Förstorad underrubrik vid klick */
+    .subline.enlarged {
+      font-size: 18px;
+      font-weight: 700;
+      color: #333;
     }
 
     .bubble.default {
@@ -143,22 +134,22 @@
     <div class="bubble default" data-index="0" data-title="Bodily experience of movement"
       data-description="Embodied experience from within<br>Being in the movement<br>Prior knowledge in relation to the phenomenon">
       <h3>Bodily experience of movement</h3>
-      <div class="subtitles-container"></div>
       <p></p>
+      <div class="subtitles-container"></div>
     </div>
 
     <div class="bubble default" data-index="1" data-title="Simultaneous experience of subject-object"
       data-description="Listening with and through the body<br>Openness to oneself and the collaborative work<br>Attention with and through the body">
       <h3>Simultaneous experience of subject-object</h3>
-      <div class="subtitles-container"></div>
       <p></p>
+      <div class="subtitles-container"></div>
     </div>
 
     <div class="bubble default" data-index="2" data-title="Separate and intertwined relation as an entity"
       data-description="Eye contact<br>Timing<br>Speed<br>Direction in space<br>Gracefulness">
       <h3>Separate and intertwined relation as an entity</h3>
-      <div class="subtitles-container"></div>
       <p></p>
+      <div class="subtitles-container"></div>
     </div>
   </div>
 
@@ -201,11 +192,11 @@
         bubble.style.zIndex = 1;
         bubble.style.left = posDefault[i].left + 'px';
         bubble.style.top = posDefault[i].top + 'px';
-
-        // Dölj p och underrubriker vid default
         bubble.querySelector('p').style.display = 'none';
-        bubble.querySelector('.subtitles-container').style.display = 'none';
-        bubble.querySelector('.subtitles-container').innerHTML = '';
+
+        const subtitlesContainer = bubble.querySelector('.subtitles-container');
+        subtitlesContainer.style.display = 'none';
+        subtitlesContainer.innerHTML = '';
       });
     }
 
@@ -223,16 +214,14 @@
           bubble.style.padding = '30px';
           bubble.style.zIndex = 10;
 
-          // Visa och fyll p med beskrivning (om du vill behålla p:et)
           bubble.querySelector('p').style.display = 'block';
           bubble.querySelector('p').innerHTML = bubble.dataset.description;
 
-          // Bygg underrubriker
           const subtitlesContainer = bubble.querySelector('.subtitles-container');
           subtitlesContainer.style.display = 'flex';
-          subtitlesContainer.innerHTML = ''; // rensa först
+          subtitlesContainer.innerHTML = ''; // Rensa för att undvika dubblering
 
-          // Dela beskrivningen på <br> och skapa en div.subline för varje rad
+          // Skapa underrubriker på egna rader
           const lines = bubble.dataset.description.split('<br>');
           lines.forEach(line => {
             const div = document.createElement('div');
@@ -241,7 +230,7 @@
             subtitlesContainer.appendChild(div);
           });
 
-          // Placera bubblan centrerat
+          // Centrera bubblan i containern
           bubble.style.left = (containerWidth - wActive) / 2 + 'px';
           bubble.style.top = (containerHeight - hActive) / 2 + 'px';
 
@@ -255,9 +244,9 @@
           bubble.style.zIndex = 20;
           bubble.querySelector('p').style.display = 'none';
 
-          // Dölj underrubriker i ej aktiva bubblor
-          bubble.querySelector('.subtitles-container').style.display = 'none';
-          bubble.querySelector('.subtitles-container').innerHTML = '';
+          const subtitlesContainer = bubble.querySelector('.subtitles-container');
+          subtitlesContainer.style.display = 'none';
+          subtitlesContainer.innerHTML = '';
 
           const centerX = (containerWidth - wActive) / 2 + wActive / 2;
           const centerY = (containerHeight - hActive) / 2 + hActive / 2;
@@ -321,7 +310,7 @@
       setDefaultPositions();
     });
 
-    // Klick på varje underrubrik ska förstora den
+    // Klick på varje underrubrik för att toggla förstoring
     document.body.addEventListener('click', (e) => {
       if (e.target.classList.contains('subline')) {
         e.target.classList.toggle('enlarged');
