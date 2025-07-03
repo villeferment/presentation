@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Bubbla Pyramid med större bubblor och klickbara underrubriker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet" />
   <style>
     body {
       margin: 0;
@@ -97,6 +98,22 @@
       overflow: hidden;
     }
 
+    /* GAP-logga längst ner i bubblorna */
+    .logo {
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
+      text-align: center;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      color: #0077cc;
+      opacity: 0.6;
+      user-select: none;
+      pointer-events: none;
+      letter-spacing: 3px;
+    }
+
     /* Reset-knapp */
     #resetBtn {
       position: absolute;
@@ -129,6 +146,7 @@ Being in the movement
 Prior knowledge in relation to the phenomenon">
       <h3>Bodily experience of movement</h3>
       <div class="subtitles-container"></div>
+      <div class="logo">GAP</div>
     </div>
 
     <div class="bubble default" data-index="1" data-title="Simultaneous experience of subject-object"
@@ -137,6 +155,7 @@ Openness to oneself and the collaborative work
 Attention with and through the body">
       <h3>Simultaneous experience of subject-object</h3>
       <div class="subtitles-container"></div>
+      <div class="logo">GAP</div>
     </div>
 
     <div class="bubble default" data-index="2" data-title="Separate and intertwined relation as an entity"
@@ -147,6 +166,7 @@ Direction in space
 Gracefulness">
       <h3>Separate and intertwined relation as an entity</h3>
       <div class="subtitles-container"></div>
+      <div class="logo">GAP</div>
     </div>
   </div>
 
