@@ -2,7 +2,7 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8" />
-  <title>Bubbla Pyramid med större bubblor och klickbara underrubriker</title>
+  <title>Bubbla Pyramid med större bubblor</title>
   <style>
     body {
       margin: 0;
@@ -40,35 +40,18 @@
     }
 
     .bubble h3 {
-      margin: 0 0 15px 0;
+      margin: 0;
       font-size: 16px;
       line-height: 1.2;
-      cursor: default; /* inte klickbar */
+      user-select: none;
     }
 
-    /* Byt från p till div för underrubriker */
-    .subtitles-container {
-      width: 100%;
-      text-align: left;
-      overflow-y: auto;
-      max-height: 160px;
-      user-select: text;
-    }
-
-    .subline {
-      margin: 5px 0;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: 14px;
-      color: #555;
-      padding: 2px 6px;
-      border-radius: 5px;
-    }
-    .subline.expanded {
-      font-weight: 700;
-      font-size: 18px;
-      color: #222;
-      background-color: #def;
+    .bubble p {
+      margin-top: 10px;
+      font-size: 13px;
+      white-space: pre-line;
+      display: none;
+      line-height: 1.3;
     }
 
     .bubble.default {
@@ -84,7 +67,6 @@
       font-size: 18px;
       padding: 30px;
       z-index: 10;
-      overflow: visible;
     }
 
     .bubble.minimized {
@@ -93,10 +75,45 @@
       font-size: 11px;
       padding: 12px 10px;
       z-index: 20;
-      overflow: hidden;
     }
 
-    /* Reset-knapp */
+    /* Ny container för underrubriker */
+    .subtitles-container {
+      width: 100%;
+      text-align: center; /* centrerar texten */
+      overflow-y: auto;
+      max-height: 160px;
+      user-select: text;
+      display: flex;
+      flex-direction: column;
+      align-items: center;  /* centrera varje subline horisontellt */
+      justify-content: flex-start;
+      padding: 0 10px;
+    }
+
+    .subline {
+      margin: 5px 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      color: #555;
+      padding: 2px 6px;
+      border-radius: 5px;
+      width: fit-content;
+      min-width: 50px;
+      user-select: text;
+    }
+
+    .subline.enlarged {
+      font-size: 20px;
+      font-weight: bold;
+      color: #000;
+      background-color: #eef0f5;
+      padding: 4px 10px;
+      border-radius: 8px;
+    }
+
+    /* Uppdaterad stil för tillbaka-knappen */
     #resetBtn {
       position: absolute;
       top: 15px;
@@ -123,28 +140,23 @@
     <button id="resetBtn" aria-label="Tillbaka">←</button>
 
     <div class="bubble default" data-index="0" data-title="Bodily experience of movement"
-      data-description="Embodied experience from within
-Being in the movement
-Prior knowledge in relation to the phenomenon">
+      data-description="Embodied experience from within\nBeing in the movement\nPrior knowledge in relation to the phenomenon">
       <h3>Bodily experience of movement</h3>
+      <p></p>
       <div class="subtitles-container"></div>
     </div>
 
     <div class="bubble default" data-index="1" data-title="Simultaneous experience of subject-object"
-      data-description="Listening with and through the body
-Openness to oneself and the collaborative work
-Attention with and through the body">
+      data-description="Listening with and through the body\nOpenness to oneself and the collaborative work\nAttention with and through the body">
       <h3>Simultaneous experience of subject-object</h3>
+      <p></p>
       <div class="subtitles-container"></div>
     </div>
 
     <div class="bubble default" data-index="2" data-title="Separate and intertwined relation as an entity"
-      data-description="Eye contact
-Timing
-Speed
-Direction in space
-Gracefulness">
+      data-description="Eye contact\nTiming\nSpeed\nDirection in space\nGracefulness">
       <h3>Separate and intertwined relation as an entity</h3>
+      <p></p>
       <div class="subtitles-container"></div>
     </div>
   </div>
@@ -166,6 +178,46 @@ Gracefulness">
     const wMini = sizes.minimized.width;
     const hMini = sizes.minimized.height;
 
+    // Lägg in underrubriker i varje bubbla vid start
+    function populateSubtitles() {
+      bubbles.forEach(bubble => {
+        const desc = bubble.dataset.description;
+        const container = bubble.querySelector('.subtitles-container');
+        container.innerHTML = ''; // rensa tidigare
+
+        if (!desc) return;
+
+        // dela upp på radbrytning
+        const lines = desc.split('\n');
+        lines.forEach(line => {
+          const div = document.createElement('div');
+          div.classList.add('subline');
+          div.textContent = line.trim();
+          container.appendChild(div);
+        });
+      });
+    }
+
+    // Klickhantering för att förstora/förtydliga underrubriker
+    function setupSubtitleClicks() {
+      const allSubtitles = document.querySelectorAll('.subline');
+      allSubtitles.forEach(sub => {
+        sub.addEventListener('click', (e) => {
+          e.stopPropagation(); // förhindra bubbla till bubbla
+
+          // toggle enlarged på just den som klickas
+          if (sub.classList.contains('enlarged')) {
+            sub.classList.remove('enlarged');
+          } else {
+            // först ta bort från alla
+            allSubtitles.forEach(s => s.classList.remove('enlarged'));
+            sub.classList.add('enlarged');
+          }
+        });
+      });
+    }
+
+    // Sätt bubblorna till default position
     function setDefaultPositions() {
       const containerWidth = 1000;
       const containerHeight = 800;
@@ -188,33 +240,15 @@ Gracefulness">
         bubble.style.zIndex = 1;
         bubble.style.left = posDefault[i].left + 'px';
         bubble.style.top = posDefault[i].top + 'px';
+        bubble.querySelector('p').style.display = 'none';
 
-        const subtitlesContainer = bubble.querySelector('.subtitles-container');
-        subtitlesContainer.style.display = 'none';
-        subtitlesContainer.innerHTML = '';
+        // Ta bort förstoring på underrubriker
+        const subs = bubble.querySelectorAll('.subline.enlarged');
+        subs.forEach(sub => sub.classList.remove('enlarged'));
       });
     }
 
-    // Renderar underrubriker som klickbara rader i .subtitles-container
-    function renderSubtitles(bubble) {
-      const container = bubble.querySelector('.subtitles-container');
-      container.innerHTML = '';
-      const lines = bubble.dataset.description.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-
-      lines.forEach(line => {
-        const div = document.createElement('div');
-        div.textContent = line;
-        div.classList.add('subline');
-        div.addEventListener('click', e => {
-          e.stopPropagation(); // Hindrar bubbla-click
-          div.classList.toggle('expanded');
-        });
-        container.appendChild(div);
-      });
-
-      container.style.display = 'block';
-    }
-
+    // Sätt aktiv bubbla och minimera övriga
     function setActivePositions(activeIndex) {
       const containerWidth = 1000;
       const containerHeight = 800;
@@ -228,10 +262,10 @@ Gracefulness">
           bubble.style.fontSize = '18px';
           bubble.style.padding = '30px';
           bubble.style.zIndex = 10;
+          bubble.querySelector('p').style.display = 'block';
+          bubble.querySelector('p').innerHTML = bubble.dataset.description.replace(/\n/g, '<br>');
           bubble.style.left = (containerWidth - wActive) / 2 + 'px';
           bubble.style.top = (containerHeight - hActive) / 2 + 'px';
-
-          renderSubtitles(bubble);
 
         } else {
           bubble.classList.add('minimized');
@@ -241,8 +275,7 @@ Gracefulness">
           bubble.style.fontSize = '11px';
           bubble.style.padding = '12px 10px';
           bubble.style.zIndex = 20;
-          bubble.style.left = '';
-          bubble.style.top = '';
+          bubble.querySelector('p').style.display = 'none';
 
           const centerX = (containerWidth - wActive) / 2 + wActive / 2;
           const centerY = (containerHeight - hActive) / 2 + hActive / 2;
@@ -291,15 +324,14 @@ Gracefulness">
               bubble.style.top = (bigTop - miniHalfH) + 'px';
             }
           }
-
-          // Dölj underrubriker i minimerade bubblor
-          const subtitlesContainer = bubble.querySelector('.subtitles-container');
-          subtitlesContainer.style.display = 'none';
-          subtitlesContainer.innerHTML = '';
+          // Ta bort förstoring på underrubriker i minimerade bubblor
+          const subs = bubble.querySelectorAll('.subline.enlarged');
+          subs.forEach(sub => sub.classList.remove('enlarged'));
         }
       });
     }
 
+    // Klick på bubbla aktiverar den
     bubbles.forEach(bubble => {
       bubble.addEventListener('click', () => {
         const index = parseInt(bubble.dataset.index);
@@ -311,6 +343,9 @@ Gracefulness">
       setDefaultPositions();
     });
 
+    // Initiera allt
+    populateSubtitles();
+    setupSubtitleClicks();
     setDefaultPositions();
   </script>
 </body>
