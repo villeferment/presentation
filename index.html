@@ -2,7 +2,7 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8" />
-  <title>Bubbla Pyramid med klickbara underrubriker</title>
+  <title>Bubbla Pyramid med större bubblor</title>
   <style>
     body {
       margin: 0;
@@ -26,6 +26,7 @@
       background: white;
       border-radius: 50% / 40%;
       box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      cursor: pointer;
       box-sizing: border-box;
       padding: 20px;
       text-align: center;
@@ -42,26 +43,33 @@
       margin: 0;
       font-size: 16px;
       line-height: 1.2;
-      pointer-events: none;
+      user-select: text;
+      /* Huvudrubriker ska INTE vara klickbara */
+      cursor: default;
     }
 
     .bubble p {
       margin-top: 10px;
       font-size: 13px;
-      white-space: pre-line;
-      line-height: 1.3;
+      white-space: normal;
       display: none;
+      line-height: 1.3;
+      user-select: text;
+      padding: 0;
     }
 
-    .bubble p span {
-      display: block;
+    /* Style för varje rad i underrubriken */
+    .bubble p .subline {
       cursor: pointer;
       transition: transform 0.3s ease, font-weight 0.3s ease;
+      margin-bottom: 6px;
+      user-select: text;
     }
 
-    .bubble p span.expanded {
+    .bubble p .subline.expanded {
       transform: scale(1.3);
       font-weight: bold;
+      color: #222;
     }
 
     .bubble.default {
@@ -87,6 +95,7 @@
       z-index: 20;
     }
 
+    /* Uppdaterad stil för tillbaka-knappen */
     #resetBtn {
       position: absolute;
       top: 15px;
@@ -103,7 +112,6 @@
       z-index: 30;
       transition: background-color 0.3s ease;
     }
-
     #resetBtn:hover {
       background: #444;
     }
@@ -142,6 +150,13 @@
       minimized: { width: 140, height: 90 }
     };
 
+    const wDefault = sizes.default.width;
+    const hDefault = sizes.default.height;
+    const wActive = sizes.active.width;
+    const hActive = sizes.active.height;
+    const wMini = sizes.minimized.width;
+    const hMini = sizes.minimized.height;
+
     function setDefaultPositions() {
       const containerWidth = 1000;
       const containerHeight = 800;
@@ -149,33 +164,34 @@
       const topOffset = 180;
 
       const posDefault = [
-        { top: topOffset, left: centerX - sizes.default.width / 2 },
-        { top: topOffset + sizes.default.height * 0.9, left: centerX - sizes.default.width + 10 },
-        { top: topOffset + sizes.default.height * 0.9, left: centerX - 10 }
+        { top: topOffset, left: centerX - wDefault / 2 },
+        { top: topOffset + hDefault * 0.9, left: centerX - wDefault + 10 },
+        { top: topOffset + hDefault * 0.9, left: centerX - 10 }
       ];
 
       bubbles.forEach((bubble, i) => {
         bubble.classList.remove('active', 'minimized');
         bubble.classList.add('default');
-        Object.assign(bubble.style, {
-          width: sizes.default.width + 'px',
-          height: sizes.default.height + 'px',
-          fontSize: '14px',
-          padding: '20px',
-          zIndex: 1,
-          left: posDefault[i].left + 'px',
-          top: posDefault[i].top + 'px'
-        });
+        bubble.style.width = wDefault + 'px';
+        bubble.style.height = hDefault + 'px';
+        bubble.style.fontSize = '14px';
+        bubble.style.padding = '20px';
+        bubble.style.zIndex = 1;
+        bubble.style.left = posDefault[i].left + 'px';
+        bubble.style.top = posDefault[i].top + 'px';
+
+        // Dölj underrubriker och ta bort tidigare klickhanterare
         const p = bubble.querySelector('p');
         p.style.display = 'none';
         p.innerHTML = '';
       });
     }
 
+    // Skapar klickbara rader (div) av texten i data-description
     function createClickableLines(text) {
       return text
         .split('\n')
-        .map(line => `<span>${line.trim()}</span>`)
+        .map(line => `<div class="subline">${line.trim()}</div>`)
         .join('');
     }
 
@@ -184,52 +200,54 @@
       const containerHeight = 800;
 
       bubbles.forEach((bubble, i) => {
-        const p = bubble.querySelector('p');
-
         if (i === activeIndex) {
           bubble.classList.add('active');
           bubble.classList.remove('default', 'minimized');
-          Object.assign(bubble.style, {
-            width: sizes.active.width + 'px',
-            height: sizes.active.height + 'px',
-            fontSize: '18px',
-            padding: '30px',
-            zIndex: 10,
-            left: (containerWidth - sizes.active.width) / 2 + 'px',
-            top: (containerHeight - sizes.active.height) / 2 + 'px'
-          });
-          p.innerHTML = createClickableLines(bubble.dataset.description);
+          bubble.style.width = wActive + 'px';
+          bubble.style.height = hActive + 'px';
+          bubble.style.fontSize = '18px';
+          bubble.style.padding = '30px';
+          bubble.style.zIndex = 10;
+
+          const p = bubble.querySelector('p');
           p.style.display = 'block';
 
-          // Lägg till klickhändelser för varje underrubrik
-          p.querySelectorAll('span').forEach(span => {
-            span.addEventListener('click', () => {
-              span.classList.toggle('expanded');
+          // Bygg underrubriker med klickbara div:ar
+          p.innerHTML = createClickableLines(bubble.dataset.description);
+
+          // Lägg till klickhändelser för varje underrubrik-rad
+          p.querySelectorAll('.subline').forEach(div => {
+            div.addEventListener('click', () => {
+              div.classList.toggle('expanded');
             });
           });
 
+          bubble.style.left = (containerWidth - wActive) / 2 + 'px';
+          bubble.style.top = (containerHeight - hActive) / 2 + 'px';
         } else {
           bubble.classList.add('minimized');
           bubble.classList.remove('default', 'active');
-          Object.assign(bubble.style, {
-            width: sizes.minimized.width + 'px',
-            height: sizes.minimized.height + 'px',
-            fontSize: '11px',
-            padding: '12px 10px',
-            zIndex: 20
-          });
+          bubble.style.width = wMini + 'px';
+          bubble.style.height = hMini + 'px';
+          bubble.style.fontSize = '11px';
+          bubble.style.padding = '12px 10px';
+          bubble.style.zIndex = 20;
+
+          const p = bubble.querySelector('p');
           p.style.display = 'none';
           p.innerHTML = '';
 
-          const centerX = (containerWidth - sizes.active.width) / 2 + sizes.active.width / 2;
-          const centerY = (containerHeight - sizes.active.height) / 2 + sizes.active.height / 2;
-          const miniHalfW = sizes.minimized.width / 2;
-          const miniHalfH = sizes.minimized.height / 2;
+          const centerX = (containerWidth - wActive) / 2 + wActive / 2;
+          const centerY = (containerHeight - hActive) / 2 + hActive / 2;
+
+          const miniHalfW = wMini / 2;
+          const miniHalfH = hMini / 2;
 
           if (activeIndex === 0) {
-            const bigTop = (containerHeight - sizes.active.height) / 2;
-            const miniTop = bigTop + sizes.active.height - miniHalfH;
+            const bigTop = (containerHeight - hActive) / 2;
+            const miniTop = bigTop + hActive - miniHalfH;
             const offsetX = 70;
+
             if (i === 1) {
               bubble.style.left = (centerX - offsetX - miniHalfW) + 'px';
               bubble.style.top = miniTop + 'px';
@@ -240,8 +258,9 @@
             }
 
           } else if (activeIndex === 2) {
-            const bigLeft = (containerWidth - sizes.active.width) / 2;
-            const bigTop = (containerHeight - sizes.active.height) / 2;
+            const bigLeft = (containerWidth - wActive) / 2;
+            const bigTop = (containerHeight - hActive) / 2;
+
             if (i === 0) {
               bubble.style.left = (bigLeft - miniHalfW + 30) + 'px';
               bubble.style.top = (bigTop - miniHalfH + 10) + 'px';
@@ -252,9 +271,10 @@
             }
 
           } else if (activeIndex === 1) {
-            const bigLeft = (containerWidth - sizes.active.width) / 2;
-            const bigTop = (containerHeight - sizes.active.height) / 2;
-            const bigRight = bigLeft + sizes.active.width;
+            const bigLeft = (containerWidth - wActive) / 2;
+            const bigTop = (containerHeight - hActive) / 2;
+            const bigRight = bigLeft + wActive;
+
             if (i === 2) {
               bubble.style.left = (bigRight - miniHalfW) + 'px';
               bubble.style.top = (bigTop - miniHalfH + 75) + 'px';
@@ -275,7 +295,9 @@
       });
     });
 
-    resetBtn.addEventListener('click', setDefaultPositions);
+    resetBtn.addEventListener('click', () => {
+      setDefaultPositions();
+    });
 
     setDefaultPositions();
   </script>
