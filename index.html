@@ -40,35 +40,42 @@
     }
 
     .bubble h3 {
-      margin: 0 0 10px 0;
+      margin: 0;
       font-size: 16px;
       line-height: 1.2;
       user-select: none;
     }
 
-    .subtitles-container {
+    .bubble p {
+      margin-top: 10px;
+      font-size: 13px;
       display: none;
+      line-height: 1.3;
+      width: 100%;
+      display: flex;
       flex-direction: column;
-      align-items: center;
-      margin-top: 5px;
-      user-select: none;
-      text-align: center;
+      align-items: center; /* Centrera underrubriker horisontellt */
+      justify-content: center;
+      padding: 0;
     }
 
     .subline {
-      font-size: 13px;
       margin: 4px 0;
       cursor: pointer;
-      transition: all 0.3s ease;
       user-select: text;
-      max-width: 90%;
-      text-align: center;
+      font-size: 13px;
+      font-weight: 400;
+      color: #555;
+      transition: all 0.3s ease;
+      width: 100%;
+      text-align: center; /* Centrerad text */
     }
 
     .subline.enlarged {
       font-size: 18px;
       font-weight: 700;
       color: #333;
+      user-select: text;
     }
 
     .bubble.default {
@@ -122,19 +129,19 @@
     <div class="bubble default" data-index="0" data-title="Bodily experience of movement"
       data-description="Embodied experience from within<br>Being in the movement<br>Prior knowledge in relation to the phenomenon">
       <h3>Bodily experience of movement</h3>
-      <div class="subtitles-container"></div>
+      <p></p>
     </div>
 
     <div class="bubble default" data-index="1" data-title="Simultaneous experience of subject-object"
       data-description="Listening with and through the body<br>Openness to oneself and the collaborative work<br>Attention with and through the body">
       <h3>Simultaneous experience of subject-object</h3>
-      <div class="subtitles-container"></div>
+      <p></p>
     </div>
 
     <div class="bubble default" data-index="2" data-title="Separate and intertwined relation as an entity"
       data-description="Eye contact<br>Timing<br>Speed<br>Direction in space<br>Gracefulness">
       <h3>Separate and intertwined relation as an entity</h3>
-      <div class="subtitles-container"></div>
+      <p></p>
     </div>
   </div>
 
@@ -177,10 +184,8 @@
         bubble.style.zIndex = 1;
         bubble.style.left = posDefault[i].left + 'px';
         bubble.style.top = posDefault[i].top + 'px';
-
-        const subtitlesContainer = bubble.querySelector('.subtitles-container');
-        subtitlesContainer.style.display = 'none';
-        subtitlesContainer.innerHTML = '';
+        bubble.querySelector('p').style.display = 'none';
+        bubble.querySelector('p').innerHTML = ''; // Rensa underrubriker
       });
     }
 
@@ -198,20 +203,18 @@
           bubble.style.padding = '30px';
           bubble.style.zIndex = 10;
 
-          const subtitlesContainer = bubble.querySelector('.subtitles-container');
-          subtitlesContainer.style.display = 'flex';
-          subtitlesContainer.innerHTML = '';
-
-          const lines = bubble.dataset.description.split('<br>');
+          // Visa underrubriker
+          const description = bubble.dataset.description || '';
+          const p = bubble.querySelector('p');
+          p.innerHTML = ''; // rensa
+          const lines = description.split('<br>');
           lines.forEach(line => {
             const div = document.createElement('div');
             div.classList.add('subline');
             div.textContent = line.trim();
-            subtitlesContainer.appendChild(div);
+            p.appendChild(div);
           });
-
-          bubble.style.left = (containerWidth - wActive) / 2 + 'px';
-          bubble.style.top = (containerHeight - hActive) / 2 + 'px';
+          p.style.display = 'flex';
 
         } else {
           bubble.classList.add('minimized');
@@ -221,60 +224,64 @@
           bubble.style.fontSize = '11px';
           bubble.style.padding = '12px 10px';
           bubble.style.zIndex = 20;
-
-          const subtitlesContainer = bubble.querySelector('.subtitles-container');
-          subtitlesContainer.style.display = 'none';
-          subtitlesContainer.innerHTML = '';
-
-          const centerX = (containerWidth - wActive) / 2 + wActive / 2;
-          const centerY = (containerHeight - hActive) / 2 + hActive / 2;
-
-          const miniHalfW = wMini / 2;
-          const miniHalfH = hMini / 2;
-
-          if (activeIndex === 0) {
-            const bigTop = (containerHeight - hActive) / 2;
-            const miniTop = bigTop + hActive - miniHalfH;
-            const offsetX = 70;
-
-            if (i === 1) {
-              bubble.style.left = (centerX - offsetX - miniHalfW) + 'px';
-              bubble.style.top = miniTop + 'px';
-            }
-            if (i === 2) {
-              bubble.style.left = (centerX + offsetX - miniHalfW) + 'px';
-              bubble.style.top = miniTop + 'px';
-            }
-
-          } else if (activeIndex === 2) {
-            const bigLeft = (containerWidth - wActive) / 2;
-            const bigTop = (containerHeight - hActive) / 2;
-
-            if (i === 0) {
-              bubble.style.left = (bigLeft - miniHalfW + 30) + 'px';
-              bubble.style.top = (bigTop - miniHalfH + 10) + 'px';
-            }
-            if (i === 1) {
-              bubble.style.left = (bigLeft - miniHalfW * 1.8) + 'px';
-              bubble.style.top = (bigTop + miniHalfH / 1.3) + 'px';
-            }
-
-          } else if (activeIndex === 1) {
-            const bigLeft = (containerWidth - wActive) / 2;
-            const bigTop = (containerHeight - hActive) / 2;
-            const bigRight = bigLeft + wActive;
-
-            if (i === 2) {
-              bubble.style.left = (bigRight - miniHalfW) + 'px';
-              bubble.style.top = (bigTop - miniHalfH + 75) + 'px';
-            }
-            if (i === 0) {
-              bubble.style.left = (bigRight - miniHalfW * 1.8) + 'px';
-              bubble.style.top = (bigTop - miniHalfH) + 'px';
-            }
-          }
+          bubble.querySelector('p').style.display = 'none';
+          bubble.querySelector('p').innerHTML = '';
         }
       });
+
+      // Placering för små bubblor runt den aktiva
+      const centerX = (containerWidth - wActive) / 2 + wActive / 2;
+      const centerY = (containerHeight - hActive) / 2 + hActive / 2;
+      const miniHalfW = wMini / 2;
+      const miniHalfH = hMini / 2;
+
+      if (activeIndex === 0) {
+        const bigTop = (containerHeight - hActive) / 2;
+        const miniTop = bigTop + hActive - miniHalfH;
+        const offsetX = 70;
+
+        bubbles.forEach((bubble, i) => {
+          if (i === 1) {
+            bubble.style.left = (centerX - offsetX - miniHalfW) + 'px';
+            bubble.style.top = miniTop + 'px';
+          }
+          if (i === 2) {
+            bubble.style.left = (centerX + offsetX - miniHalfW) + 'px';
+            bubble.style.top = miniTop + 'px';
+          }
+        });
+
+      } else if (activeIndex === 2) {
+        const bigLeft = (containerWidth - wActive) / 2;
+        const bigTop = (containerHeight - hActive) / 2;
+
+        bubbles.forEach((bubble, i) => {
+          if (i === 0) {
+            bubble.style.left = (bigLeft - miniHalfW + 30) + 'px';
+            bubble.style.top = (bigTop - miniHalfH + 10) + 'px';
+          }
+          if (i === 1) {
+            bubble.style.left = (bigLeft - miniHalfW * 1.8) + 'px';
+            bubble.style.top = (bigTop + miniHalfH / 1.3) + 'px';
+          }
+        });
+
+      } else if (activeIndex === 1) {
+        const bigLeft = (containerWidth - wActive) / 2;
+        const bigTop = (containerHeight - hActive) / 2;
+        const bigRight = bigLeft + wActive;
+
+        bubbles.forEach((bubble, i) => {
+          if (i === 2) {
+            bubble.style.left = (bigRight - miniHalfW) + 'px';
+            bubble.style.top = (bigTop - miniHalfH + 75) + 'px';
+          }
+          if (i === 0) {
+            bubble.style.left = (bigRight - miniHalfW * 1.8) + 'px';
+            bubble.style.top = (bigTop - miniHalfH) + 'px';
+          }
+        });
+      }
     }
 
     bubbles.forEach(bubble => {
@@ -288,10 +295,10 @@
       setDefaultPositions();
     });
 
-    // Event delegation på document (istället för body)
+    // Klick-funktion för underrubriker (subline)
     document.addEventListener('click', (e) => {
       if (e.target.classList.contains('subline')) {
-        e.stopPropagation(); // Förhindra klicket bubbla vidare
+        e.stopPropagation();
         e.target.classList.toggle('enlarged');
       }
     });
