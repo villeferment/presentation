@@ -46,17 +46,15 @@
       user-select: none;
     }
 
-    /* Container för underrubriker */
     .subtitles-container {
       display: none;
       flex-direction: column;
       align-items: center;
       margin-top: 5px;
       user-select: none;
-      text-align: center; /* Centrerar underrubrikerna */
+      text-align: center;
     }
 
-    /* Varje underrubrik på egen rad och centrerad */
     .subline {
       font-size: 13px;
       margin: 4px 0;
@@ -67,7 +65,6 @@
       text-align: center;
     }
 
-    /* Förstorad underrubrik vid klick */
     .subline.enlarged {
       font-size: 18px;
       font-weight: 700;
@@ -205,7 +202,6 @@
           subtitlesContainer.style.display = 'flex';
           subtitlesContainer.innerHTML = '';
 
-          // Skapa underrubriker på egna rader
           const lines = bubble.dataset.description.split('<br>');
           lines.forEach(line => {
             const div = document.createElement('div');
@@ -214,7 +210,6 @@
             subtitlesContainer.appendChild(div);
           });
 
-          // Centrera bubblan i containern
           bubble.style.left = (containerWidth - wActive) / 2 + 'px';
           bubble.style.top = (containerHeight - hActive) / 2 + 'px';
 
@@ -293,9 +288,10 @@
       setDefaultPositions();
     });
 
-    // Klick på varje underrubrik för att toggla förstoring
-    document.body.addEventListener('click', (e) => {
+    // Event delegation på document (istället för body)
+    document.addEventListener('click', (e) => {
       if (e.target.classList.contains('subline')) {
+        e.stopPropagation(); // Förhindra klicket bubbla vidare
         e.target.classList.toggle('enlarged');
       }
     });
