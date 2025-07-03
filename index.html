@@ -43,6 +43,13 @@
       margin: 0;
       font-size: 16px;
       line-height: 1.2;
+      transition: transform 0.3s ease, font-weight 0.3s ease;
+      cursor: pointer;
+    }
+
+    .bubble h3.enlarged {
+      transform: scale(1.3);
+      font-weight: bold;
     }
 
     .bubble p {
@@ -76,7 +83,6 @@
       z-index: 20;
     }
 
-    /* Uppdaterad stil för tillbaka-knappen */
     #resetBtn {
       position: absolute;
       top: 15px;
@@ -93,6 +99,7 @@
       z-index: 30;
       transition: background-color 0.3s ease;
     }
+
     #resetBtn:hover {
       background: #444;
     }
@@ -161,6 +168,10 @@
         bubble.style.left = posDefault[i].left + 'px';
         bubble.style.top = posDefault[i].top + 'px';
         bubble.querySelector('p').style.display = 'none';
+
+        // Återställ ev. förstoring på h3
+        const h3 = bubble.querySelector('h3');
+        h3.classList.remove('enlarged');
       });
     }
 
@@ -169,6 +180,9 @@
       const containerHeight = 800;
 
       bubbles.forEach((bubble, i) => {
+        const h3 = bubble.querySelector('h3');
+        h3.classList.remove('enlarged'); // Återställ förstoring vid omväxling
+
         if (i === activeIndex) {
           bubble.classList.add('active');
           bubble.classList.remove('default', 'minimized');
@@ -193,7 +207,6 @@
 
           const centerX = (containerWidth - wActive) / 2 + wActive / 2;
           const centerY = (containerHeight - hActive) / 2 + hActive / 2;
-
           const miniHalfW = wMini / 2;
           const miniHalfH = hMini / 2;
 
@@ -251,6 +264,16 @@
 
     resetBtn.addEventListener('click', () => {
       setDefaultPositions();
+    });
+
+    // Klick på underrubriker (endast i aktiv bubbla)
+    document.querySelectorAll('.bubble h3').forEach(h3 => {
+      h3.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const bubble = h3.closest('.bubble');
+        if (!bubble.classList.contains('active')) return;
+        h3.classList.toggle('enlarged');
+      });
     });
 
     setDefaultPositions();
