@@ -2,7 +2,7 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8" />
-  <title>Bubbla Pyramid med större bubblor</title>
+  <title>Bubbla Pyramid med förstora underrubriker</title>
   <style>
     body {
       margin: 0;
@@ -14,13 +14,11 @@
       height: 100vh;
       overflow: hidden;
     }
-
     .container {
       position: relative;
       width: 1000px;
       height: 800px;
     }
-
     .bubble {
       position: absolute;
       background: white;
@@ -38,16 +36,13 @@
       align-items: center;
       user-select: none;
     }
-
     .bubble h3 {
       margin: 0;
       font-size: 16px;
       line-height: 1.2;
       user-select: text;
-      /* Huvudrubriker ska INTE vara klickbara */
-      cursor: default;
+      cursor: default; /* INTE klickbar */
     }
-
     .bubble p {
       margin-top: 10px;
       font-size: 13px;
@@ -56,29 +51,29 @@
       line-height: 1.3;
       user-select: text;
       padding: 0;
+      width: 100%;
     }
-
-    /* Style för varje rad i underrubriken */
     .bubble p .subline {
       cursor: pointer;
       transition: transform 0.3s ease, font-weight 0.3s ease;
       margin-bottom: 6px;
       user-select: text;
+      text-align: left;
     }
-
     .bubble p .subline.expanded {
       transform: scale(1.3);
       font-weight: bold;
       color: #222;
+      background: #eef;
+      border-radius: 4px;
+      padding: 2px 6px;
     }
-
     .bubble.default {
       width: 300px;
       height: 180px;
       font-size: 14px;
       z-index: 1;
     }
-
     .bubble.active {
       width: 500px;
       height: 300px;
@@ -86,7 +81,6 @@
       padding: 30px;
       z-index: 10;
     }
-
     .bubble.minimized {
       width: 140px;
       height: 90px;
@@ -94,8 +88,6 @@
       padding: 12px 10px;
       z-index: 20;
     }
-
-    /* Uppdaterad stil för tillbaka-knappen */
     #resetBtn {
       position: absolute;
       top: 15px;
@@ -180,14 +172,12 @@
         bubble.style.left = posDefault[i].left + 'px';
         bubble.style.top = posDefault[i].top + 'px';
 
-        // Dölj underrubriker och ta bort tidigare klickhanterare
         const p = bubble.querySelector('p');
         p.style.display = 'none';
         p.innerHTML = '';
       });
     }
 
-    // Skapar klickbara rader (div) av texten i data-description
     function createClickableLines(text) {
       return text
         .split('\n')
@@ -200,6 +190,8 @@
       const containerHeight = 800;
 
       bubbles.forEach((bubble, i) => {
+        const p = bubble.querySelector('p');
+
         if (i === activeIndex) {
           bubble.classList.add('active');
           bubble.classList.remove('default', 'minimized');
@@ -208,22 +200,20 @@
           bubble.style.fontSize = '18px';
           bubble.style.padding = '30px';
           bubble.style.zIndex = 10;
+          bubble.style.left = (containerWidth - wActive) / 2 + 'px';
+          bubble.style.top = (containerHeight - hActive) / 2 + 'px';
 
-          const p = bubble.querySelector('p');
+          // Visa och skapa klickbara underrubriker på nya rader
           p.style.display = 'block';
-
-          // Bygg underrubriker med klickbara div:ar
           p.innerHTML = createClickableLines(bubble.dataset.description);
 
-          // Lägg till klickhändelser för varje underrubrik-rad
+          // Lägg till eventlisteners på varje subline
           p.querySelectorAll('.subline').forEach(div => {
             div.addEventListener('click', () => {
               div.classList.toggle('expanded');
             });
           });
 
-          bubble.style.left = (containerWidth - wActive) / 2 + 'px';
-          bubble.style.top = (containerHeight - hActive) / 2 + 'px';
         } else {
           bubble.classList.add('minimized');
           bubble.classList.remove('default', 'active');
@@ -232,14 +222,12 @@
           bubble.style.fontSize = '11px';
           bubble.style.padding = '12px 10px';
           bubble.style.zIndex = 20;
-
-          const p = bubble.querySelector('p');
           p.style.display = 'none';
           p.innerHTML = '';
 
+          // Positionering av minimerade bubblor
           const centerX = (containerWidth - wActive) / 2 + wActive / 2;
           const centerY = (containerHeight - hActive) / 2 + hActive / 2;
-
           const miniHalfW = wMini / 2;
           const miniHalfH = hMini / 2;
 
