@@ -2,8 +2,8 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8" />
-  <title>Bubbla Pyramid med större bubblor och klickbara underrubriker</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet" />
+  <title>Bubbla Pyramid med GAP-logga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
@@ -43,14 +43,12 @@
     .bubble h3 {
       margin: 0 0 15px 0;
       font-size: 16px;
-      line-height: 1.2;
-      cursor: default; /* inte klickbar */
+      cursor: default;
     }
 
-    /* Byt från p till div för underrubriker */
     .subtitles-container {
       width: 100%;
-      text-align: center; /* Centrerar underrubriker */
+      text-align: center;
       overflow-y: auto;
       max-height: 160px;
       user-select: text;
@@ -64,8 +62,8 @@
       color: #555;
       padding: 2px 6px;
       border-radius: 5px;
-      user-select: text;
     }
+
     .subline.expanded {
       font-weight: 700;
       font-size: 18px;
@@ -90,15 +88,15 @@
     }
 
     .bubble.minimized {
-      width: 182px; /* ca 30% större */
-      height: 117px; /* ca 30% större */
+      width: 182px;
+      height: 117px;
       font-size: 11px;
       padding: 12px 10px;
       z-index: 20;
       overflow: hidden;
     }
 
-    /* GAP-logga längst ner i bubblorna */
+    /* GAP-loggan */
     .logo {
       position: absolute;
       bottom: 10px;
@@ -112,11 +110,13 @@
       user-select: none;
       pointer-events: none;
       letter-spacing: 3px;
-      .bubble.active[data-index="0"] .logo {
-  bottom: 100px;
-}
+    }
 
-    /* Reset-knapp */
+    /* Flytta upp GAP-loggan i övre bubblan när aktiv */
+    .bubble.active[data-index="0"] .logo {
+      bottom: 40px;
+    }
+
     #resetBtn {
       position: absolute;
       top: 15px;
@@ -129,10 +129,10 @@
       font-weight: bold;
       cursor: pointer;
       border-radius: 50%;
-      user-select: none;
       z-index: 30;
       transition: background-color 0.3s ease;
     }
+
     #resetBtn:hover {
       background: #444;
     }
@@ -179,7 +179,7 @@ Gracefulness">
     const sizes = {
       default: { width: 300, height: 180 },
       active: { width: 500, height: 300 },
-      minimized: { width: 182, height: 117 }  // ca 30% större än tidigare 140x90
+      minimized: { width: 182, height: 117 }
     };
 
     const wDefault = sizes.default.width;
@@ -218,7 +218,6 @@ Gracefulness">
       });
     }
 
-    // Renderar underrubriker som klickbara rader i .subtitles-container
     function renderSubtitles(bubble) {
       const container = bubble.querySelector('.subtitles-container');
       container.innerHTML = '';
@@ -229,7 +228,7 @@ Gracefulness">
         div.textContent = line;
         div.classList.add('subline');
         div.addEventListener('click', e => {
-          e.stopPropagation(); // Hindrar bubbla-click
+          e.stopPropagation();
           div.classList.toggle('expanded');
         });
         container.appendChild(div);
@@ -255,7 +254,6 @@ Gracefulness">
           bubble.style.top = (containerHeight - hActive) / 2 + 'px';
 
           renderSubtitles(bubble);
-
         } else {
           bubble.classList.add('minimized');
           bubble.classList.remove('default', 'active');
@@ -276,7 +274,7 @@ Gracefulness">
           if (activeIndex === 0) {
             const bigTop = (containerHeight - hActive) / 2;
             const miniTop = bigTop + hActive - miniHalfH;
-            const offsetX = 70 * (wMini / 140); // förstorat proportionellt
+            const offsetX = 70 * (wMini / 140);
 
             if (i === 1) {
               bubble.style.left = (centerX - offsetX - miniHalfW) + 'px';
@@ -315,7 +313,6 @@ Gracefulness">
             }
           }
 
-          // Dölj underrubriker i minimerade bubblor
           const subtitlesContainer = bubble.querySelector('.subtitles-container');
           subtitlesContainer.style.display = 'none';
           subtitlesContainer.innerHTML = '';
@@ -323,7 +320,6 @@ Gracefulness">
       });
     }
 
-    // Klick på bubbla gör den aktiv
     bubbles.forEach(bubble => {
       bubble.addEventListener('click', () => {
         const index = parseInt(bubble.dataset.index);
@@ -331,12 +327,10 @@ Gracefulness">
       });
     });
 
-    // Reset knapp återställer default-positioner
     resetBtn.addEventListener('click', () => {
       setDefaultPositions();
     });
 
-    // Init
     setDefaultPositions();
   </script>
 </body>
