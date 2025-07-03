@@ -2,7 +2,7 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8" />
-  <title>Bubbla Pyramid med större bubblor</title>
+  <title>Bubbla Pyramid med större bubblor och klickbara underrubriker</title>
   <style>
     body {
       margin: 0;
@@ -40,42 +40,35 @@
     }
 
     .bubble h3 {
-      margin: 0;
+      margin: 0 0 15px 0;
       font-size: 16px;
       line-height: 1.2;
-      user-select: none;
+      cursor: default; /* inte klickbar */
     }
 
-    .bubble p {
-      margin-top: 10px;
-      font-size: 13px;
-      display: none;
-      line-height: 1.3;
+    /* Byt från p till div för underrubriker */
+    .subtitles-container {
       width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center; /* Centrera underrubriker horisontellt */
-      justify-content: center;
-      padding: 0;
+      text-align: left;
+      overflow-y: auto;
+      max-height: 160px;
+      user-select: text;
     }
 
     .subline {
-      margin: 4px 0;
+      margin: 5px 0;
       cursor: pointer;
-      user-select: text;
-      font-size: 13px;
-      font-weight: 400;
-      color: #555;
       transition: all 0.3s ease;
-      width: 100%;
-      text-align: center; /* Centrerad text */
+      font-size: 14px;
+      color: #555;
+      padding: 2px 6px;
+      border-radius: 5px;
     }
-
-    .subline.enlarged {
-      font-size: 18px;
+    .subline.expanded {
       font-weight: 700;
-      color: #333;
-      user-select: text;
+      font-size: 18px;
+      color: #222;
+      background-color: #def;
     }
 
     .bubble.default {
@@ -91,6 +84,7 @@
       font-size: 18px;
       padding: 30px;
       z-index: 10;
+      overflow: visible;
     }
 
     .bubble.minimized {
@@ -99,8 +93,10 @@
       font-size: 11px;
       padding: 12px 10px;
       z-index: 20;
+      overflow: hidden;
     }
 
+    /* Reset-knapp */
     #resetBtn {
       position: absolute;
       top: 15px;
@@ -127,21 +123,29 @@
     <button id="resetBtn" aria-label="Tillbaka">←</button>
 
     <div class="bubble default" data-index="0" data-title="Bodily experience of movement"
-      data-description="Embodied experience from within<br>Being in the movement<br>Prior knowledge in relation to the phenomenon">
+      data-description="Embodied experience from within
+Being in the movement
+Prior knowledge in relation to the phenomenon">
       <h3>Bodily experience of movement</h3>
-      <p></p>
+      <div class="subtitles-container"></div>
     </div>
 
     <div class="bubble default" data-index="1" data-title="Simultaneous experience of subject-object"
-      data-description="Listening with and through the body<br>Openness to oneself and the collaborative work<br>Attention with and through the body">
+      data-description="Listening with and through the body
+Openness to oneself and the collaborative work
+Attention with and through the body">
       <h3>Simultaneous experience of subject-object</h3>
-      <p></p>
+      <div class="subtitles-container"></div>
     </div>
 
     <div class="bubble default" data-index="2" data-title="Separate and intertwined relation as an entity"
-      data-description="Eye contact<br>Timing<br>Speed<br>Direction in space<br>Gracefulness">
+      data-description="Eye contact
+Timing
+Speed
+Direction in space
+Gracefulness">
       <h3>Separate and intertwined relation as an entity</h3>
-      <p></p>
+      <div class="subtitles-container"></div>
     </div>
   </div>
 
@@ -184,9 +188,31 @@
         bubble.style.zIndex = 1;
         bubble.style.left = posDefault[i].left + 'px';
         bubble.style.top = posDefault[i].top + 'px';
-        bubble.querySelector('p').style.display = 'none';
-        bubble.querySelector('p').innerHTML = ''; // Rensa underrubriker
+
+        const subtitlesContainer = bubble.querySelector('.subtitles-container');
+        subtitlesContainer.style.display = 'none';
+        subtitlesContainer.innerHTML = '';
       });
+    }
+
+    // Renderar underrubriker som klickbara rader i .subtitles-container
+    function renderSubtitles(bubble) {
+      const container = bubble.querySelector('.subtitles-container');
+      container.innerHTML = '';
+      const lines = bubble.dataset.description.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+
+      lines.forEach(line => {
+        const div = document.createElement('div');
+        div.textContent = line;
+        div.classList.add('subline');
+        div.addEventListener('click', e => {
+          e.stopPropagation(); // Hindrar bubbla-click
+          div.classList.toggle('expanded');
+        });
+        container.appendChild(div);
+      });
+
+      container.style.display = 'block';
     }
 
     function setActivePositions(activeIndex) {
@@ -202,19 +228,10 @@
           bubble.style.fontSize = '18px';
           bubble.style.padding = '30px';
           bubble.style.zIndex = 10;
+          bubble.style.left = (containerWidth - wActive) / 2 + 'px';
+          bubble.style.top = (containerHeight - hActive) / 2 + 'px';
 
-          // Visa underrubriker
-          const description = bubble.dataset.description || '';
-          const p = bubble.querySelector('p');
-          p.innerHTML = ''; // rensa
-          const lines = description.split('<br>');
-          lines.forEach(line => {
-            const div = document.createElement('div');
-            div.classList.add('subline');
-            div.textContent = line.trim();
-            p.appendChild(div);
-          });
-          p.style.display = 'flex';
+          renderSubtitles(bubble);
 
         } else {
           bubble.classList.add('minimized');
@@ -224,64 +241,63 @@
           bubble.style.fontSize = '11px';
           bubble.style.padding = '12px 10px';
           bubble.style.zIndex = 20;
-          bubble.querySelector('p').style.display = 'none';
-          bubble.querySelector('p').innerHTML = '';
+          bubble.style.left = '';
+          bubble.style.top = '';
+
+          const centerX = (containerWidth - wActive) / 2 + wActive / 2;
+          const centerY = (containerHeight - hActive) / 2 + hActive / 2;
+
+          const miniHalfW = wMini / 2;
+          const miniHalfH = hMini / 2;
+
+          if (activeIndex === 0) {
+            const bigTop = (containerHeight - hActive) / 2;
+            const miniTop = bigTop + hActive - miniHalfH;
+            const offsetX = 70;
+
+            if (i === 1) {
+              bubble.style.left = (centerX - offsetX - miniHalfW) + 'px';
+              bubble.style.top = miniTop + 'px';
+            }
+            if (i === 2) {
+              bubble.style.left = (centerX + offsetX - miniHalfW) + 'px';
+              bubble.style.top = miniTop + 'px';
+            }
+
+          } else if (activeIndex === 2) {
+            const bigLeft = (containerWidth - wActive) / 2;
+            const bigTop = (containerHeight - hActive) / 2;
+
+            if (i === 0) {
+              bubble.style.left = (bigLeft - miniHalfW + 30) + 'px';
+              bubble.style.top = (bigTop - miniHalfH + 10) + 'px';
+            }
+            if (i === 1) {
+              bubble.style.left = (bigLeft - miniHalfW * 1.8) + 'px';
+              bubble.style.top = (bigTop + miniHalfH / 1.3) + 'px';
+            }
+
+          } else if (activeIndex === 1) {
+            const bigLeft = (containerWidth - wActive) / 2;
+            const bigTop = (containerHeight - hActive) / 2;
+            const bigRight = bigLeft + wActive;
+
+            if (i === 2) {
+              bubble.style.left = (bigRight - miniHalfW) + 'px';
+              bubble.style.top = (bigTop - miniHalfH + 75) + 'px';
+            }
+            if (i === 0) {
+              bubble.style.left = (bigRight - miniHalfW * 1.8) + 'px';
+              bubble.style.top = (bigTop - miniHalfH) + 'px';
+            }
+          }
+
+          // Dölj underrubriker i minimerade bubblor
+          const subtitlesContainer = bubble.querySelector('.subtitles-container');
+          subtitlesContainer.style.display = 'none';
+          subtitlesContainer.innerHTML = '';
         }
       });
-
-      // Placering för små bubblor runt den aktiva
-      const centerX = (containerWidth - wActive) / 2 + wActive / 2;
-      const centerY = (containerHeight - hActive) / 2 + hActive / 2;
-      const miniHalfW = wMini / 2;
-      const miniHalfH = hMini / 2;
-
-      if (activeIndex === 0) {
-        const bigTop = (containerHeight - hActive) / 2;
-        const miniTop = bigTop + hActive - miniHalfH;
-        const offsetX = 70;
-
-        bubbles.forEach((bubble, i) => {
-          if (i === 1) {
-            bubble.style.left = (centerX - offsetX - miniHalfW) + 'px';
-            bubble.style.top = miniTop + 'px';
-          }
-          if (i === 2) {
-            bubble.style.left = (centerX + offsetX - miniHalfW) + 'px';
-            bubble.style.top = miniTop + 'px';
-          }
-        });
-
-      } else if (activeIndex === 2) {
-        const bigLeft = (containerWidth - wActive) / 2;
-        const bigTop = (containerHeight - hActive) / 2;
-
-        bubbles.forEach((bubble, i) => {
-          if (i === 0) {
-            bubble.style.left = (bigLeft - miniHalfW + 30) + 'px';
-            bubble.style.top = (bigTop - miniHalfH + 10) + 'px';
-          }
-          if (i === 1) {
-            bubble.style.left = (bigLeft - miniHalfW * 1.8) + 'px';
-            bubble.style.top = (bigTop + miniHalfH / 1.3) + 'px';
-          }
-        });
-
-      } else if (activeIndex === 1) {
-        const bigLeft = (containerWidth - wActive) / 2;
-        const bigTop = (containerHeight - hActive) / 2;
-        const bigRight = bigLeft + wActive;
-
-        bubbles.forEach((bubble, i) => {
-          if (i === 2) {
-            bubble.style.left = (bigRight - miniHalfW) + 'px';
-            bubble.style.top = (bigTop - miniHalfH + 75) + 'px';
-          }
-          if (i === 0) {
-            bubble.style.left = (bigRight - miniHalfW * 1.8) + 'px';
-            bubble.style.top = (bigTop - miniHalfH) + 'px';
-          }
-        });
-      }
     }
 
     bubbles.forEach(bubble => {
@@ -293,14 +309,6 @@
 
     resetBtn.addEventListener('click', () => {
       setDefaultPositions();
-    });
-
-    // Klick-funktion för underrubriker (subline)
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('subline')) {
-        e.stopPropagation();
-        e.target.classList.toggle('enlarged');
-      }
     });
 
     setDefaultPositions();
