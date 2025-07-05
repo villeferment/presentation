@@ -6,14 +6,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
   <style>
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f7f7f7;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      overflow: visible;
+       margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f7f7f7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* height: 100vh;  <-- TA BORT DENNA RAD */
+  overflow: visible;
+  min-height: 100%;
+  overflow-y: auto;
     }
 
     .container {
@@ -282,6 +284,13 @@ Gracefulness">
         div.addEventListener('click', e => {
           e.stopPropagation();
           div.classList.toggle('expanded');
+          const buffer = 40; // lite marginal till botten
+const subtitlesHeight = floatingSubtitles.offsetHeight;
+const maxBottom = container.clientHeight;
+
+if (topPos + subtitlesHeight + buffer > maxBottom) {
+  const newTop = maxBottom - subtitlesHeight - buffer;
+  floatingSubtitles.style.top = Math.max(newTop, 10) + 'px'; // undvik negativ position
         });
         container.appendChild(div);
       });
