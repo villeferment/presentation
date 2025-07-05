@@ -64,25 +64,31 @@
       border-radius: 5px;
     }
 
-    .subline.expanded {
-      font-weight: 700;
-      font-size: 18px;
-      color: #222;
-      background-color: #def;
-      border-radius: 999px;
-      padding: 6px 12px;
-      transition: all 0.3s ease;
-      transform: scale(1.05);
-      opacity: 1;
-      animation: popIn 0.25s ease-out;
-    }
+    .subline {
+  margin: 5px 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  color: #555;
+  padding: 2px 6px;
+  border-radius: 5px;
+  display: inline-block; /* ✅ gör det möjligt att få oval form */
+  line-height: 1.4;
+}
 
-    .subline:not(.expanded) {
-      transition: all 0.3s ease;
-      transform: scale(1);
-      opacity: 1;
-      animation: popOut 0.2s ease-in;
-    }
+.subline.expanded {
+  font-weight: 700;
+  font-size: 18px;
+  color: #222;
+  background-color: #def;
+  border-radius: 999px;        /* ✅ extremt rundat – oval form */
+  padding: 6px 16px;           /* ✅ bredare horisontellt */
+  transform: scale(1.05);
+  opacity: 1;
+  animation: popIn 0.25s ease-out;
+  display: inline-block;       /* ✅ även här, så att formen behålls */
+  line-height: 1.4;
+}
 
     @keyframes popIn {
       0% {
