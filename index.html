@@ -38,6 +38,7 @@
       justify-content: center;
       align-items: center;
       user-select: none;
+      isolation: isolate;           /* nyckeln för z-index och overflow */
     }
 
     .bubble h3 {
@@ -79,6 +80,8 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Mjuk skugga */
   transition: all 0.3s ease;
   margin: 10px;
+  z-index: 100;
+  position: relative; /* krävs för att z-index ska fungera */
 }
 
     .subline:not(.expanded) {
