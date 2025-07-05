@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Bubbla Pyramid med GAP-logga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet" />
   <style>
     body {
       margin: 0;
@@ -20,6 +20,10 @@
       position: relative;
       width: 1000px;
       height: 800px;
+      background: #fff;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: visible;
     }
 
     .bubble {
@@ -46,17 +50,15 @@
       cursor: default;
     }
 
-    /* Den flytande container för subtitles, utanför bubblorna */
+    /* Flytande container för subtitles */
     #floating-subtitles.subtitles-container {
       position: absolute;
       max-width: 480px;
       text-align: center;
-      overflow-y: visible;
       user-select: text;
-      left: 0;
-      top: 0;
       z-index: 1000;
-      pointer-events: none; /* gör att man inte kan klicka utanför underrubriker */
+      pointer-events: none;
+      transition: left 0.3s ease, top 0.3s ease;
     }
 
     #floating-subtitles.subtitles-container .subline {
@@ -69,7 +71,9 @@
       border-radius: 5px;
       display: block;
       line-height: 1.4;
-      pointer-events: auto; /* gör att man kan klicka på underrubrikerna */
+      pointer-events: auto;
+      user-select: text;
+      white-space: normal;
     }
 
     #floating-subtitles.subtitles-container .subline.expanded {
@@ -83,37 +87,8 @@
       display: inline-block;
       line-height: 1.5;
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      transition: all 0.3s ease;
       margin: 10px;
-    }
-
-    .subline:not(.expanded) {
-      transition: all 0.3s ease;
-      transform: scale(1);
-      opacity: 1;
-      animation: popOut 0.2s ease-in;
-    }
-
-    @keyframes popIn {
-      0% {
-        transform: scale(0.8);
-        opacity: 0;
-      }
-      100% {
-        transform: scale(1.05);
-        opacity: 1;
-      }
-    }
-
-    @keyframes popOut {
-      0% {
-        transform: scale(1.05);
-        opacity: 1;
-      }
-      100% {
-        transform: scale(1);
-        opacity: 1;
-      }
+      user-select: text;
     }
 
     .bubble.default {
@@ -121,6 +96,7 @@
       height: 180px;
       font-size: 14px;
       z-index: 1;
+      overflow: visible;
     }
 
     .bubble.active {
@@ -154,10 +130,6 @@
       user-select: none;
       pointer-events: none;
       letter-spacing: 3px;
-    }
-
-    .bubble.active[data-index="0"] .logo {
-      bottom: 50px;
     }
 
     #resetBtn {
@@ -194,7 +166,7 @@
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="container" id="container">
     <button id="resetBtn" aria-label="Tillbaka">←</button>
 
     <div class="bubble default" data-index="0" data-title="Bodily experience of movement"
@@ -202,7 +174,6 @@
 Being in the movement
 Prior knowledge in relation to the phenomenon">
       <h3>Bodily experience of movement</h3>
-      <!-- subtitles-container tas bort från här -->
       <div class="logo">GAP</div>
     </div>
 
@@ -211,7 +182,6 @@ Prior knowledge in relation to the phenomenon">
 Openness to oneself and the collaborative work
 Attention with and through the body">
       <h3>Simultaneous experience of subject-object</h3>
-      <!-- subtitles-container tas bort från här -->
       <div class="logo">GAP</div>
     </div>
 
@@ -222,11 +192,10 @@ Speed
 Direction in space
 Gracefulness">
       <h3>Separate and intertwined relation as an entity</h3>
-      <!-- subtitles-container tas bort från här -->
       <div class="logo">GAP</div>
     </div>
 
-    <!-- Ny global flytande container för underrubriker -->
+    <!-- Global flytande container för underrubriker -->
     <div id="floating-subtitles" class="subtitles-container"></div>
   </div>
 
@@ -234,6 +203,7 @@ Gracefulness">
     const bubbles = document.querySelectorAll('.bubble');
     const resetBtn = document.getElementById('resetBtn');
     const floatingSubtitles = document.getElementById('floating-subtitles');
+    const container = document.getElementById('container');
 
     const sizes = {
       default: { width: 300, height: 180 },
@@ -241,40 +211,35 @@ Gracefulness">
       minimized: { width: 182, height: 117 }
     };
 
-    const wDefault = sizes.default.width;
-    const hDefault = sizes.default.height;
-    const wActive = sizes.active.width;
-    const hActive = sizes.active.height;
-    const wMini = sizes.minimized.width;
-    const hMini = sizes.minimized.height;
-
     function setDefaultPositions() {
-      const containerWidth = 1000;
-      const containerHeight = 800;
+      const containerWidth = container.clientWidth;
+      const containerHeight = container.clientHeight;
       const centerX = containerWidth / 2;
       const topOffset = 180;
 
       const posDefault = [
-        { top: topOffset, left: centerX - wDefault / 2 },
-        { top: topOffset + hDefault * 0.9, left: centerX - wDefault + 10 },
-        { top: topOffset + hDefault * 0.9, left: centerX - 10 }
+        { top: topOffset, left: centerX - sizes.default.width / 2 },
+        { top: topOffset + sizes.default.height * 0.9, left: centerX - sizes.default.width + 10 },
+        { top: topOffset + sizes.default.height * 0.9, left: centerX - 10 }
       ];
 
       bubbles.forEach((bubble, i) => {
         bubble.classList.remove('active', 'minimized');
         bubble.classList.add('default');
-        bubble.style.width = wDefault + 'px';
-        bubble.style.height = hDefault + 'px';
+        bubble.style.width = sizes.default.width + 'px';
+        bubble.style.height = sizes.default.height + 'px';
         bubble.style.fontSize = '14px';
         bubble.style.padding = '20px';
         bubble.style.zIndex = 1;
         bubble.style.left = posDefault[i].left + 'px';
         bubble.style.top = posDefault[i].top + 'px';
 
-        // Dölj flytande underrubriker när ej aktiv bubbla
-        floatingSubtitles.style.display = 'none';
-        floatingSubtitles.innerHTML = '';
+        bubble.style.overflow = 'visible';
       });
+
+      // Dölj flytande subtitles när ingen aktiv bubbla
+      floatingSubtitles.style.display = 'none';
+      floatingSubtitles.innerHTML = '';
     }
 
     function renderSubtitles(bubble) {
@@ -296,82 +261,85 @@ Gracefulness">
         floatingSubtitles.appendChild(div);
       });
 
-      // Positionera flytande container ovanpå aktiv bubbla
-      const rect = bubble.getBoundingClientRect();
-      const containerRect = document.querySelector('.container').getBoundingClientRect();
+      // Positionera flytande container ca 30px under bubblans topp och 10px från bubblans vänsterkant
+      const bubbleRect = bubble.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
 
-      // Justera position så den hamnar ca 60px under bubblans topp och 10px från vänster kant av bubblan
-      floatingSubtitles.style.left = (rect.left - containerRect.left + 10) + 'px';
-      floatingSubtitles.style.top = (rect.top - containerRect.top + 60) + 'px';
+      const leftPos = bubbleRect.left - containerRect.left + 10;
+      const topPos = bubbleRect.top - containerRect.top + 30;
+
+      floatingSubtitles.style.left = leftPos + 'px';
+      floatingSubtitles.style.top = topPos + 'px';
 
       floatingSubtitles.style.display = 'block';
     }
 
     function setActivePositions(activeIndex) {
-      const containerWidth = 1000;
-      const containerHeight = 800;
+      const containerWidth = container.clientWidth;
+      const containerHeight = container.clientHeight;
 
       bubbles.forEach((bubble, i) => {
         if (i === activeIndex) {
           bubble.classList.add('active');
           bubble.classList.remove('default', 'minimized');
-          bubble.style.width = wActive + 'px';
-          bubble.style.height = hActive + 'px';
+          bubble.style.width = sizes.active.width + 'px';
+          bubble.style.height = sizes.active.height + 'px';
           bubble.style.fontSize = '18px';
           bubble.style.padding = '30px';
           bubble.style.zIndex = 10;
-          bubble.style.left = (containerWidth - wActive) / 2 + 'px';
-          bubble.style.top = (containerHeight - hActive) / 2 + 'px';
+          bubble.style.left = (containerWidth - sizes.active.width) / 2 + 'px';
+          bubble.style.top = (containerHeight - sizes.active.height) / 2 + 'px';
+
+          bubble.style.overflow = 'visible';
 
           renderSubtitles(bubble);
         } else {
           bubble.classList.add('minimized');
           bubble.classList.remove('default', 'active');
-          bubble.style.width = wMini + 'px';
-          bubble.style.height = hMini + 'px';
+          bubble.style.width = sizes.minimized.width + 'px';
+          bubble.style.height = sizes.minimized.height + 'px';
           bubble.style.fontSize = '11px';
           bubble.style.padding = '12px 10px';
           bubble.style.zIndex = 20;
-          bubble.style.left = '';
-          bubble.style.top = '';
 
-          const centerX = (containerWidth - wActive) / 2 + wActive / 2;
-          const centerY = (containerHeight - hActive) / 2 + hActive / 2;
+          // Placera småbubblorna vid botten av stora bubblan i mitten med liten offset
+          const bigCenterX = (containerWidth - sizes.active.width) / 2 + sizes.active.width / 2;
+          const bigCenterY = (containerHeight - sizes.active.height) / 2 + sizes.active.height / 2;
 
-          const miniHalfW = wMini / 2;
-          const miniHalfH = hMini / 2;
+          const miniHalfW = sizes.minimized.width / 2;
+          const miniHalfH = sizes.minimized.height / 2;
 
           if (activeIndex === 0) {
-            const bigTop = (containerHeight - hActive) / 2;
-            const miniTop = bigTop + hActive - miniHalfH;
-            const offsetX = 70 * (wMini / 140);
+            const bigTop = (containerHeight - sizes.active.height) / 2;
+            const miniTop = bigTop + sizes.active.height - miniHalfH;
+            const offsetX = 70;
 
             if (i === 1) {
-              bubble.style.left = (centerX - offsetX - miniHalfW) + 'px';
+              bubble.style.left = (bigCenterX - offsetX - miniHalfW) + 'px';
               bubble.style.top = miniTop + 'px';
             }
             if (i === 2) {
-              bubble.style.left = (centerX + offsetX - miniHalfW) + 'px';
+              bubble.style.left = (bigCenterX + offsetX - miniHalfW) + 'px';
               bubble.style.top = miniTop + 'px';
             }
-
           } else if (activeIndex === 2) {
-            const bigLeft = (containerWidth - wActive) / 2;
-            const bigTop = (containerHeight - hActive) / 2;
+            const bigLeft = (containerWidth - sizes.active.width) / 2;
+            const bigTop = (containerHeight - sizes.active.height) / 2;
 
             if (i === 0) {
-              bubble.style.left = (bigLeft + wActive - miniHalfW) + 'px';
-              bubble.style.top = (bigTop + hActive - hMini * 1.7) + 'px';
+              bubble.style.left = (bigLeft + sizes.active.width - miniHalfW) + 'px';
+              bubble.style.top = (bigTop + sizes.active.height - sizes.minimized.height * 1.7) + 'px';
             }
             if (i === 1) {
-              bubble.style.left = (bigLeft + wActive - miniHalfW) + 'px';
-              bubble.style.top = (bigTop + hActive - hMini / 2) + 'px';
+              bubble.style.left = (bigLeft + sizes.active.width - miniHalfW) + 'px';
+              bubble.style.top = (bigTop + sizes.active.height - sizes.minimized.height / 2) + 'px';
             }
           } else {
-            // Default, göm eller placera minimalt
             bubble.style.left = '';
             bubble.style.top = '';
           }
+
+          bubble.style.overflow = 'hidden';
         }
       });
     }
@@ -379,20 +347,16 @@ Gracefulness">
     bubbles.forEach(bubble => {
       bubble.addEventListener('click', () => {
         const idx = parseInt(bubble.dataset.index);
-        if (bubble.classList.contains('active')) {
-          // Klick på aktiv bubbla gör inget
-          return;
-        }
+        if (bubble.classList.contains('active')) return;
         setActivePositions(idx);
       });
     });
 
     resetBtn.addEventListener('click', () => {
       setDefaultPositions();
-      floatingSubtitles.style.display = 'none';
-      floatingSubtitles.innerHTML = '';
     });
 
+    // Initiera med default positioner
     setDefaultPositions();
   </script>
 </body>
