@@ -50,10 +50,12 @@
 
     .subtitles-container {
       width: 100%;
-      text-align: center;
-      overflow-y: auto;
-      max-height: 160px;
-      user-select: text;
+  text-align: center;
+  overflow-x: visible;   /* 🟢 viktig */
+  overflow-y: auto;
+  max-height: 160px;
+  user-select: text;
+  position: relative; 
     }
 
     .subline {
@@ -83,6 +85,9 @@
       margin: 10px;
       z-index: 100;
       position: relative;
+      max-width: 90%;         /* ✅ Så den inte blir bredare än bubbla */
+      white-space: normal;    /* ✅ Radbryt vid behov */
+      word-break: break-word;
     }
 
     .subline:not(.expanded) {
