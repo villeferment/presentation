@@ -6,16 +6,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
   <style>
     body {
-       margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f7f7f7;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /* height: 100vh;  <-- TA BORT DENNA RAD */
-  overflow: visible;
-  min-height: 100%;
-  overflow-y: auto;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: visible;
+      min-height: 100%;
+      overflow-y: auto;
     }
 
     .container {
@@ -40,7 +39,7 @@
       justify-content: center;
       align-items: center;
       user-select: none;
-      isolation: isolate;           /* nyckeln för z-index och overflow */
+      isolation: isolate;
     }
 
     .bubble h3 {
@@ -58,33 +57,33 @@
     }
 
     .subline {
-  margin: 5px 0;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 14px;
-  color: #555;
-  padding: 2px 6px;
-  border-radius: 5px;
-  display: block;         /* ✅ ligger som en rad */
-  line-height: 1.4;
-}
+      margin: 5px 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      color: #555;
+      padding: 2px 6px;
+      border-radius: 5px;
+      display: block;
+      line-height: 1.4;
+    }
 
-.subline.expanded {
-  font-weight: 700;
-  font-size: 20px;                /* Större text */
-  color: #111;
-  background-color: #cdefff;      /* Ljusare blå highlight */
-  border-radius: 999px;           /* Oval form */
-  padding: 10px 24px;             /* Mer utrymme */
-  transform: scale(1.1);          /* Förstora lite extra */
-  display: inline-block;
-  line-height: 1.5;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Mjuk skugga */
-  transition: all 0.3s ease;
-  margin: 10px;
-  z-index: 100;
-  position: relative; /* krävs för att z-index ska fungera */
-}
+    .subline.expanded {
+      font-weight: 700;
+      font-size: 20px;
+      color: #111;
+      background-color: #cdefff;
+      border-radius: 999px;
+      padding: 10px 24px;
+      transform: scale(1.1);
+      display: inline-block;
+      line-height: 1.5;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      margin: 10px;
+      z-index: 100;
+      position: relative;
+    }
 
     .subline:not(.expanded) {
       transition: all 0.3s ease;
@@ -284,13 +283,6 @@ Gracefulness">
         div.addEventListener('click', e => {
           e.stopPropagation();
           div.classList.toggle('expanded');
-          const buffer = 40; // lite marginal till botten
-const subtitlesHeight = floatingSubtitles.offsetHeight;
-const maxBottom = container.clientHeight;
-
-if (topPos + subtitlesHeight + buffer > maxBottom) {
-  const newTop = maxBottom - subtitlesHeight - buffer;
-  floatingSubtitles.style.top = Math.max(newTop, 10) + 'px'; // undvik negativ position
         });
         container.appendChild(div);
       });
@@ -311,8 +303,15 @@ if (topPos + subtitlesHeight + buffer > maxBottom) {
           bubble.style.fontSize = '18px';
           bubble.style.padding = '30px';
           bubble.style.zIndex = 10;
+
+          // 👇 Justera topposition för bubbla 2
+          let topOffset = (containerHeight - hActive) / 2;
+          if (activeIndex === 2) {
+            topOffset -= 40; // Lyft upp för att undvika avklippning
+          }
+
           bubble.style.left = (containerWidth - wActive) / 2 + 'px';
-          bubble.style.top = (containerHeight - hActive) / 2 + 'px';
+          bubble.style.top = topOffset + 'px';
 
           renderSubtitles(bubble);
         } else {
