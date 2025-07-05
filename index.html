@@ -46,40 +46,46 @@
       cursor: default;
     }
 
-    .subtitles-container {
-      width: 100%;
+    /* Den flytande container för subtitles, utanför bubblorna */
+    #floating-subtitles.subtitles-container {
+      position: absolute;
+      max-width: 480px;
       text-align: center;
-      overflow-y: auto;
-      max-height: 160px;
+      overflow-y: visible;
       user-select: text;
+      left: 0;
+      top: 0;
+      z-index: 1000;
+      pointer-events: none; /* gör att man inte kan klicka utanför underrubriker */
     }
 
-    .subline {
-  margin: 5px 0;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 14px;
-  color: #555;
-  padding: 2px 6px;
-  border-radius: 5px;
-  display: block;         /* ✅ ligger som en rad */
-  line-height: 1.4;
-}
+    #floating-subtitles.subtitles-container .subline {
+      margin: 5px 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      color: #555;
+      padding: 2px 6px;
+      border-radius: 5px;
+      display: block;
+      line-height: 1.4;
+      pointer-events: auto; /* gör att man kan klicka på underrubrikerna */
+    }
 
-.subline.expanded {
-  font-weight: 700;
-  font-size: 20px;                /* Större text */
-  color: #111;
-  background-color: #cdefff;      /* Ljusare blå highlight */
-  border-radius: 999px;           /* Oval form */
-  padding: 10px 24px;             /* Mer utrymme */
-  transform: scale(1.1);          /* Förstora lite extra */
-  display: inline-block;
-  line-height: 1.5;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Mjuk skugga */
-  transition: all 0.3s ease;
-  margin: 10px;
-}
+    #floating-subtitles.subtitles-container .subline.expanded {
+      font-weight: 700;
+      font-size: 20px;
+      color: #111;
+      background-color: #cdefff;
+      border-radius: 999px;
+      padding: 10px 24px;
+      transform: scale(1.1);
+      display: inline-block;
+      line-height: 1.5;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      margin: 10px;
+    }
 
     .subline:not(.expanded) {
       transition: all 0.3s ease;
@@ -196,7 +202,7 @@
 Being in the movement
 Prior knowledge in relation to the phenomenon">
       <h3>Bodily experience of movement</h3>
-      <div class="subtitles-container"></div>
+      <!-- subtitles-container tas bort från här -->
       <div class="logo">GAP</div>
     </div>
 
@@ -205,7 +211,7 @@ Prior knowledge in relation to the phenomenon">
 Openness to oneself and the collaborative work
 Attention with and through the body">
       <h3>Simultaneous experience of subject-object</h3>
-      <div class="subtitles-container"></div>
+      <!-- subtitles-container tas bort från här -->
       <div class="logo">GAP</div>
     </div>
 
@@ -216,14 +222,18 @@ Speed
 Direction in space
 Gracefulness">
       <h3>Separate and intertwined relation as an entity</h3>
-      <div class="subtitles-container"></div>
+      <!-- subtitles-container tas bort från här -->
       <div class="logo">GAP</div>
     </div>
+
+    <!-- Ny global flytande container för underrubriker -->
+    <div id="floating-subtitles" class="subtitles-container"></div>
   </div>
 
   <script>
     const bubbles = document.querySelectorAll('.bubble');
     const resetBtn = document.getElementById('resetBtn');
+    const floatingSubtitles = document.getElementById('floating-subtitles');
 
     const sizes = {
       default: { width: 300, height: 180 },
@@ -261,16 +271,19 @@ Gracefulness">
         bubble.style.left = posDefault[i].left + 'px';
         bubble.style.top = posDefault[i].top + 'px';
 
-        const subtitlesContainer = bubble.querySelector('.subtitles-container');
-        subtitlesContainer.style.display = 'none';
-        subtitlesContainer.innerHTML = '';
+        // Dölj flytande underrubriker när ej aktiv bubbla
+        floatingSubtitles.style.display = 'none';
+        floatingSubtitles.innerHTML = '';
       });
     }
 
     function renderSubtitles(bubble) {
-      const container = bubble.querySelector('.subtitles-container');
-      container.innerHTML = '';
-      const lines = bubble.dataset.description.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+      floatingSubtitles.innerHTML = '';
+
+      const lines = bubble.dataset.description
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0);
 
       lines.forEach(line => {
         const div = document.createElement('div');
@@ -280,10 +293,18 @@ Gracefulness">
           e.stopPropagation();
           div.classList.toggle('expanded');
         });
-        container.appendChild(div);
+        floatingSubtitles.appendChild(div);
       });
 
-      container.style.display = 'block';
+      // Positionera flytande container ovanpå aktiv bubbla
+      const rect = bubble.getBoundingClientRect();
+      const containerRect = document.querySelector('.container').getBoundingClientRect();
+
+      // Justera position så den hamnar ca 60px under bubblans topp och 10px från vänster kant av bubblan
+      floatingSubtitles.style.left = (rect.left - containerRect.left + 10) + 'px';
+      floatingSubtitles.style.top = (rect.top - containerRect.top + 60) + 'px';
+
+      floatingSubtitles.style.display = 'block';
     }
 
     function setActivePositions(activeIndex) {
@@ -339,45 +360,37 @@ Gracefulness">
             const bigTop = (containerHeight - hActive) / 2;
 
             if (i === 0) {
-              bubble.style.left = (bigLeft - miniHalfW + 40 * (wMini / 140)) + 'px';
-              bubble.style.top = (bigTop - miniHalfH + 10 * (hMini / 90)) + 'px';
+              bubble.style.left = (bigLeft + wActive - miniHalfW) + 'px';
+              bubble.style.top = (bigTop + hActive - hMini * 1.7) + 'px';
             }
             if (i === 1) {
-              bubble.style.left = (bigLeft - miniHalfW - 20 * (wMini / 140)) + 'px';
-              bubble.style.top = (bigTop + miniHalfH / 1.3 * (hMini / 90)) + 'px';
+              bubble.style.left = (bigLeft + wActive - miniHalfW) + 'px';
+              bubble.style.top = (bigTop + hActive - hMini / 2) + 'px';
             }
-
-          } else if (activeIndex === 1) {
-            const bigLeft = (containerWidth - wActive) / 2;
-            const bigTop = (containerHeight - hActive) / 2;
-            const bigRight = bigLeft + wActive;
-
-            if (i === 2) {
-              bubble.style.left = (bigRight - miniHalfW + 30 * (wMini / 140)) + 'px';
-              bubble.style.top = (bigTop - miniHalfH + 75 * (hMini / 90)) + 'px';
-            }
-            if (i === 0) {
-              bubble.style.left = (bigRight - miniHalfW - 20 * (wMini / 140)) + 'px';
-              bubble.style.top = (bigTop - miniHalfH) + 'px';
-            }
+          } else {
+            // Default, göm eller placera minimalt
+            bubble.style.left = '';
+            bubble.style.top = '';
           }
-
-          const subtitlesContainer = bubble.querySelector('.subtitles-container');
-          subtitlesContainer.style.display = 'none';
-          subtitlesContainer.innerHTML = '';
         }
       });
     }
 
     bubbles.forEach(bubble => {
       bubble.addEventListener('click', () => {
-        const index = parseInt(bubble.dataset.index);
-        setActivePositions(index);
+        const idx = parseInt(bubble.dataset.index);
+        if (bubble.classList.contains('active')) {
+          // Klick på aktiv bubbla gör inget
+          return;
+        }
+        setActivePositions(idx);
       });
     });
 
     resetBtn.addEventListener('click', () => {
       setDefaultPositions();
+      floatingSubtitles.style.display = 'none';
+      floatingSubtitles.innerHTML = '';
     });
 
     setDefaultPositions();
