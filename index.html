@@ -68,16 +68,16 @@
 
 .subline.expanded {
   font-weight: 700;
-  font-size: 18px;
-  color: #222;
-  background-color: #def;
-  border-radius: 999px;   /* ✅ oval form */
-  padding: 6px 16px;
-  transform: scale(1.05);
-  opacity: 1;
-  animation: popIn 0.25s ease-out;
-  display: inline-block;  /* ✅ bara den highlightade blir oval */
-  line-height: 1.4;
+  font-size: 20px;                /* Större text */
+  color: #111;
+  background-color: #cdefff;      /* Ljusare blå highlight */
+  border-radius: 999px;           /* Oval form */
+  padding: 10px 24px;             /* Mer utrymme */
+  transform: scale(1.1);          /* Förstora lite extra */
+  display: inline-block;
+  line-height: 1.5;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Mjuk skugga */
+  transition: all 0.3s ease;
 }
 
     .subline:not(.expanded) {
